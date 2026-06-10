@@ -302,10 +302,53 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 @media (max-width:760px){
-  #app{grid-template-columns:1fr;grid-template-areas:"top" "main"}
-  .sidebar{display:none}
-  .modal-body{grid-template-columns:1fr}
+  /* layout: top bar + scrollable main + fixed bottom nav */
+  #app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;grid-template-areas:"top" "main" "side"}
+  [dir=rtl] #app{grid-template-columns:1fr;grid-template-areas:"top" "main" "side"}
+  .topbar{padding:0 12px;height:auto;min-height:56px;flex-wrap:wrap;gap:6px}
+  .brand-logos{gap:10px}
+  .brand-logos img{max-height:30px}
+  .topbar-actions{gap:4px}
+  .topbar-actions .ghost-btn{padding:8px 9px;font-size:.78rem}
+  .topbar-actions .ghost-btn span:not(:first-child){display:none} /* hide button text, keep icon */
+  .role-badge{font-size:.6rem;padding:4px 8px}
+
+  /* sidebar -> bottom navigation bar */
+  .sidebar{grid-area:side;flex-direction:row;justify-content:space-around;align-items:center;gap:2px;
+    padding:6px 4px;border-inline-end:none;border-top:1px solid var(--line);
+    position:sticky;bottom:0;background:var(--panel);z-index:40}
+  .sidebar-foot{display:none}
+  .nav-item{flex-direction:column;gap:3px;padding:7px 6px;font-size:.6rem;flex:1;text-align:center;justify-content:center;border-radius:10px}
+  .nav-item .ico{font-size:1.15rem}
+  .nav-item span:not(.ico){font-size:.58rem;letter-spacing:.02em}
+
+  .main{padding:16px 14px 22px}
+  .page-head h2{font-size:1.2rem}
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:18px}
+
+  /* tables scroll horizontally instead of squashing */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .table-wrap table{min-width:560px}
+
+  /* modal becomes near full-screen, scrollable, single column */
+  .overlay{padding:0;align-items:stretch}
+  .modal{width:100%;min-height:100vh;border-radius:0;border:none;display:flex;flex-direction:column}
+  .modal-body{grid-template-columns:1fr;overflow-y:auto;flex:1}
+  .modal-col{padding:16px 16px}
   .modal-col.left{border-inline-end:none;border-bottom:1px solid var(--line)}
+  .modal-head{padding:14px 16px;position:sticky;top:0;z-index:2}
+  .modal-head .mh-code{font-size:1.2rem}
+  .modal-foot{padding:12px 14px;position:sticky;bottom:0}
+  .modal-foot .btn{flex:1;justify-content:center;padding:12px 10px}
+  .field-row,.field-row-3{grid-template-columns:1fr}
+
+  /* quotation: shrink the fixed A4 page to fit the phone (screen only; print uses mm rules) */
+  .q-shell{padding:12px 0;overflow-x:auto}
+  .q-toolbar{flex-wrap:wrap;padding:0 10px}
+  .q-page{zoom:.6}
+}
+@media (max-width:480px){
+  .q-page{zoom:.46}
 }
 </style>
 </head>
