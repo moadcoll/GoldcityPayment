@@ -678,7 +678,7 @@ async function sbPushSettings(){
 
 // saveState: write locally + push to Supabase
 function saveState(unit){lsSave();if(unit)sbPushUnit(unit);else{STATE.units.forEach(u=>sbPushUnit(u));}}
-function saveSettings(){lsSave();sbPushSettings();}
+function persistSettings(){lsSave();sbPushSettings();}
 
 // loadState: use cache first, then pull from Supabase
 function loadState(){
@@ -1241,7 +1241,7 @@ function saveSettings(){
   STATE.settings.consultant=document.getElementById('setConsultant').value;
   STATE.settings.passcode=document.getElementById('setPass').value;
   STATE.settings.userPasscode=document.getElementById('setUserPass').value;
-  saveSettings();toast(t('saved'));}
+  persistSettings();toast(t('saved'));}
 
 /* ---------------- EXPORT / IMPORT ---------------- */
 function exportData(){
