@@ -1308,28 +1308,6 @@ document.getElementById('topSevenB').src=mallLogoSrc();
 document.getElementById('loginGC').src=gcLogoSrc();
 document.getElementById('topGC').src=gcLogoSrc();
 applyI18n();
-
-/* ---------------- AUTO-UPDATE CHECK ---------------- */
-const APP_VERSION=(document.querySelector('meta[name=app-version]')||{}).content||'0';
-let UPDATE_PROMPTED=false;
-async function checkForUpdate(){
-  try{
-    const r=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'});
-    if(!r.ok)return; const txt=await r.text();
-    const m=txt.match(/name="app-version" content="([^"]+)"/);
-    if(m && m[1]!==APP_VERSION && !UPDATE_PROMPTED){
-      UPDATE_PROMPTED=true;
-      // if user is mid-edit (a unit panel or quote open), ask; otherwise refresh quietly
-      const busy=document.getElementById('unitOverlay')||(document.getElementById('qShell')&&document.getElementById('qShell').style.display!=='none'&&document.getElementById('qShell').style.display!=='');
-      if(busy){
-        const bar=document.createElement('div');bar.className='toast';bar.style.cursor='pointer';
-        bar.innerHTML='🔄 '+t('updateAvail');bar.onclick=()=>location.reload();
-        document.body.appendChild(bar);
-      }else{location.reload();}
-    }
-  }catch(e){}
-}
-setInterval(checkForUpdate, 4*60*1000); // every 4 minutes
 </script>
 </body>
 </html>
