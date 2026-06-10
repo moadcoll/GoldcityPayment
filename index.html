@@ -286,7 +286,7 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
 
 @media print{
   html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0!important}
-  #login,#app,.toast{display:none!important}
+  #login,#app,.toast,.overlay{display:none!important}
   .q-shell{position:static!important;display:block!important;overflow:visible!important;height:auto!important;padding:0!important;margin:0!important;background:#fff!important}
   .q-toolbar{display:none!important}
   #qPages{display:block!important}
@@ -1185,11 +1185,13 @@ function generateQuote(){
     <div class="q-foot"><div>${gc1} · ${t('projectName')}</div><div>Al Shorouk · 8th District · Building 87</div></div>
   </div>`;
   document.getElementById('qPages').innerHTML=page1+page2;
+  const uo=document.getElementById('unitOverlay'); if(uo) uo.style.display='none';
   document.getElementById('qShell').style.display='block';
   applyHighlight(document.getElementById('qPlanImg'),u);
   window.scrollTo(0,0);
 }
-function closeQuote(){document.getElementById('qShell').style.display='none';}
+function closeQuote(){document.getElementById('qShell').style.display='none';
+  const uo=document.getElementById('unitOverlay'); if(uo) uo.style.display='flex';}
 function printQuote(){
   const pages=document.getElementById('qPages');if(!pages)return;
   const clone=pages.cloneNode(true);
