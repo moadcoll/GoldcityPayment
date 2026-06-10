@@ -2,6 +2,10 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="app-version" content="2026-06-10-a">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold City · Seven B — Payment Plans</title>
 <style>
@@ -577,7 +581,7 @@ const I18N={
     unitLoc:'Unit Location — Floor Plan',settingsTitle:'Settings',branding:'Branding',
     companyName:'Company Name',mallName:'Mall / Project Name',changePass:'Admin Passcode',userPass:'Sales User Passcode',
     defConsultant:'Default Sales Consultant',saveSettings:'Save Settings',replaceGC:'Replace Gold City logo (optional)',
-    replaceMall:'Replace Seven B logo (optional)',saved:'Saved',imported:'Data imported',exported:'Data exported',
+    replaceMall:'Replace Seven B logo (optional)',updateAvail:'New version available — tap to update',saved:'Saved',imported:'Data imported',exported:'Data exported',
     flagNote:'Review needed: Ground-floor codes 24 & 29 are absent from the price sheet (30 units, not 32). Also, a brochure rendering is branded "I\'M LIFE Outlet Mall" while the cover/contact use "Seven B" — confirm the correct project name in Settings.',
     quoteValid:'This proposal is valid for 14 days from the date of issue and is subject to availability. All amounts are in Egyptian Pounds (EGP).',
     selectCustomer:'Enter customer name to generate quotation',planFor:'Payment plan for',
@@ -611,7 +615,7 @@ const I18N={
     unitLoc:'موقع الوحدة — مخطط الدور',settingsTitle:'الإعدادات',branding:'الهوية',
     companyName:'اسم الشركة',mallName:'اسم المول / المشروع',changePass:'رمز المدير',userPass:'رمز مستخدم المبيعات',
     defConsultant:'مستشار المبيعات الافتراضي',saveSettings:'حفظ الإعدادات',replaceGC:'استبدال شعار جولد سيتي (اختياري)',
-    replaceMall:'استبدال شعار سيفن بي (اختياري)',saved:'تم الحفظ',imported:'تم استيراد البيانات',exported:'تم تصدير البيانات',
+    replaceMall:'استبدال شعار سيفن بي (اختياري)',updateAvail:'يوجد إصدار جديد — اضغط للتحديث',saved:'تم الحفظ',imported:'تم استيراد البيانات',exported:'تم تصدير البيانات',
     flagNote:'مراجعة مطلوبة: كودا الأرضي 24 و29 غير موجودين في قائمة الأسعار (30 وحدة وليست 32). كما يظهر في أحد رندرات البروشور اسم "I\'M LIFE Outlet Mall" بينما الغلاف وبيانات التواصل تستخدم "سيفن بي" — برجاء تأكيد اسم المشروع من الإعدادات.',
     quoteValid:'هذا العرض ساري لمدة ١٤ يومًا من تاريخ الإصدار وحسب توافر الوحدة. جميع المبالغ بالجنيه المصري.',
     selectCustomer:'أدخل اسم العميل لإصدار العرض',planFor:'خطة سداد لـ',
@@ -1304,6 +1308,28 @@ document.getElementById('topSevenB').src=mallLogoSrc();
 document.getElementById('loginGC').src=gcLogoSrc();
 document.getElementById('topGC').src=gcLogoSrc();
 applyI18n();
+
+/* ---------------- AUTO-UPDATE CHECK ---------------- */
+const APP_VERSION=(document.querySelector('meta[name=app-version]')||{}).content||'0';
+let UPDATE_PROMPTED=false;
+async function checkForUpdate(){
+  try{
+    const r=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'});
+    if(!r.ok)return; const txt=await r.text();
+    const m=txt.match(/name="app-version" content="([^"]+)"/);
+    if(m && m[1]!==APP_VERSION && !UPDATE_PROMPTED){
+      UPDATE_PROMPTED=true;
+      // if user is mid-edit (a unit panel or quote open), ask; otherwise refresh quietly
+      const busy=document.getElementById('unitOverlay')||(document.getElementById('qShell')&&document.getElementById('qShell').style.display!=='none'&&document.getElementById('qShell').style.display!=='');
+      if(busy){
+        const bar=document.createElement('div');bar.className='toast';bar.style.cursor='pointer';
+        bar.innerHTML='🔄 '+t('updateAvail');bar.onclick=()=>location.reload();
+        document.body.appendChild(bar);
+      }else{location.reload();}
+    }
+  }catch(e){}
+}
+setInterval(checkForUpdate, 4*60*1000); // every 4 minutes
 </script>
 </body>
 </html>
