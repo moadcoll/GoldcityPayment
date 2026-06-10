@@ -342,6 +342,7 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
     <div class="topbar-actions">
       <span id="roleBadge" class="role-badge">Admin</span>
       <button class="ghost-btn" onclick="toggleLang()" id="langBtn">العربية</button>
+      <button class="ghost-btn" onclick="sbPull().then(()=>{nav(CURRENT);toast('✓ Synced');})" title="Sync latest data">⟳</button>
       <button class="ghost-btn admin-only" onclick="exportData()"><span>⬇</span><span data-i18n="export">Export</span></button>
       <button class="ghost-btn admin-only" onclick="document.getElementById('importFile').click()"><span>⬆</span><span data-i18n="import">Import</span></button>
       <input type="file" id="importFile" accept="application/json" class="hidden" onchange="importData(event)">
@@ -572,14 +573,82 @@ const I18N={
 let LANG='en';
 function t(k){return (I18N[LANG]&&I18N[LANG][k])||k;}
 
-/* ---------------- STATE ---------------- */
+/* ---------------- STATE + SUPABASE SYNC ---------------- */
 const LS_KEY='goldcity_sevenb_state_v6';
+const SB_URL='https://mjkhkmqopvwsgagykzze.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qa2hrbXFvcHZ3c2dhZ3lrenplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzcyNTEsImV4cCI6MjA5NjYxMzI1MX0.6ZCTRacLhLgVUcO-Lzj5qWgKBHqtid4yJi--jPetDDQ';
+const SB_HDR=()=>({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=minimal'});
+
 let STATE=null;
 function defaultState(){return {units:JSON.parse(JSON.stringify(SEED_UNITS)),
   settings:{passcode:'goldcity',userPasscode:'user',companyName:'GOLD CITY',mallName:'Seven B Mall',consultant:'',
     gcLogo:ASSETS.gc_logo,mallLogo:ASSETS.sevenb_logo}};}
-function loadState(){try{const s=localStorage.getItem(LS_KEY);if(s){STATE=JSON.parse(s);return;}}catch(e){}STATE=defaultState();}
-function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(STATE));}catch(e){}}
+
+// localStorage fast cache
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify(STATE));}catch(e){}}
+function lsLoad(){try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return null;}
+
+// Supabase helpers
+async function sbFetch(path,opts={}){
+  try{const r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}});
+    if(!r.ok)return null; const txt=await r.text(); return txt?JSON.parse(txt):null;}
+  catch(e){return null;}}
+
+// Pull latest from Supabase and merge into STATE
+async function sbPull(){
+  const [rows,sets]=await Promise.all([
+    sbFetch('/rest/v1/units?select=id,code,price,status,notes,customer,mark,plan&order=id'),
+    sbFetch('/rest/v1/settings?select=*&limit=1')]);
+  if(rows&&rows.length){
+    rows.forEach(r=>{const u=STATE.units.find(x=>x.id===r.id||x.code===r.code);if(u){
+      if(r.price!=null)u.price=r.price; if(r.status)u.status=r.status;
+      if(r.notes!=null)u.notes=r.notes; if(r.customer!=null)u.customer=r.customer;
+      if(r.mark!=null)u.mark=r.mark; if(r.plan!=null)u.plan=r.plan;}});}
+  if(sets&&sets[0]){const s=sets[0];
+    if(s.passcode)STATE.settings.passcode=s.passcode;
+    if(s.user_passcode)STATE.settings.userPasscode=s.user_passcode;
+    if(s.company_name)STATE.settings.companyName=s.company_name;
+    if(s.mall_name)STATE.settings.mallName=s.mall_name;
+    if(s.consultant!=null)STATE.settings.consultant=s.consultant;
+    if(s.gc_logo)STATE.settings.gcLogo=s.gc_logo;
+    if(s.mall_logo)STATE.settings.mallLogo=s.mall_logo;}
+  lsSave();}
+
+// Push one unit to Supabase
+async function sbPushUnit(u){
+  await sbFetch('/rest/v1/units',{method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:u.id,code:u.code,price:u.price,status:u.status,
+      notes:u.notes||'',customer:u.customer||null,mark:u.mark||null,plan:u.plan||null,
+      updated_at:new Date().toISOString()})});}
+
+// Push settings to Supabase
+async function sbPushSettings(){
+  const s=STATE.settings;
+  await sbFetch('/rest/v1/settings',{method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:1,passcode:s.passcode,user_passcode:s.userPasscode,
+      company_name:s.companyName,mall_name:s.mallName,consultant:s.consultant||'',
+      gc_logo:s.gcLogo&&s.gcLogo.length<500000?s.gcLogo:undefined,
+      mall_logo:s.mallLogo&&s.mallLogo.length<500000?s.mallLogo:undefined,
+      updated_at:new Date().toISOString()})});}
+
+// saveState: write locally + push to Supabase
+function saveState(unit){lsSave();if(unit)sbPushUnit(unit);else{STATE.units.forEach(u=>sbPushUnit(u));}}
+function saveSettings(){lsSave();sbPushSettings();}
+
+// loadState: use cache first, then pull from Supabase
+function loadState(){
+  const cached=lsLoad();
+  STATE=cached||defaultState();
+  // always pull fresh from Supabase in background
+  sbPull().then(()=>{
+    document.getElementById('loginSevenB').src=mallLogoSrc();
+    document.getElementById('loginGC').src=gcLogoSrc();
+    document.getElementById('topSevenB').src=mallLogoSrc();
+    document.getElementById('topGC').src=gcLogoSrc();
+  });
+}
 
 /* ---------------- HELPERS ---------------- */
 const FLOOR_KEY={F0:'ground',F1:'first',F2:'second',F3:'third'};
@@ -928,7 +997,7 @@ function recalc(){
     ${p.maintenance?`<div class="plan-stat"><span class="k">${t('maintenance')} (${money(p.maintenance.pct)}%)</span><span class="v">EGP ${money(p.maintenance.amount)}</span></div>
     <div class="plan-stat big"><span class="k">${t('grandTotal')}</span><span class="v">EGP ${money(p.grandTotal)}</span></div>`:''}`;
 }
-function saveUnit(){readPlanInputs();MODAL_UNIT.status=document.getElementById('uStatus').value;MODAL_UNIT.notes=document.getElementById('uNotes').value;saveState();toast(t('saved'));if(CURRENT!=='settings')nav(CURRENT);}
+function saveUnit(){readPlanInputs();MODAL_UNIT.status=document.getElementById('uStatus').value;MODAL_UNIT.notes=document.getElementById('uNotes').value;saveState(MODAL_UNIT);toast(t('saved'));if(CURRENT!=='settings')nav(CURRENT);}
 function closeUnit(){const o=document.getElementById('unitOverlay');if(o)o.remove();}
 let DRAG=null;
 function planDown(e){
@@ -962,12 +1031,12 @@ function planUp(e){
     MODAL_UNIT.mark={x:+(cx*100).toFixed(2),y:+(cy*100).toFixed(2)}; // tiny drag = point
   }
   applyHighlight(document.getElementById('planImg'),MODAL_UNIT);
-  saveState();toast(t('markSet'));
+  saveState(MODAL_UNIT);toast(t('markSet'));
   const fr=document.getElementById('planFrame');
   if(fr){const h=fr.parentNode.querySelector('.plan-hint');if(h&&h.innerHTML.indexOf('clearMark')<0)h.innerHTML=t('markHint')+` · <a href="#" onclick="clearMark(event)" style="color:var(--gold)">${t('clearMark')}</a>`;}
 }
 function clearMark(e){if(e)e.preventDefault();MODAL_UNIT.mark=null;
-  applyHighlight(document.getElementById('planImg'),MODAL_UNIT);saveState();
+  applyHighlight(document.getElementById('planImg'),MODAL_UNIT);saveState(MODAL_UNIT);
   const hint=document.querySelector('#planFrame');if(hint){const h=hint.parentNode.querySelector('.plan-hint');if(h)h.innerHTML=t('markHint');}
 }
 
@@ -1127,7 +1196,7 @@ function saveSettings(){
   STATE.settings.consultant=document.getElementById('setConsultant').value;
   STATE.settings.passcode=document.getElementById('setPass').value;
   STATE.settings.userPasscode=document.getElementById('setUserPass').value;
-  saveState();toast(t('saved'));}
+  saveSettings();toast(t('saved'));}
 
 /* ---------------- EXPORT / IMPORT ---------------- */
 function exportData(){
