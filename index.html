@@ -660,7 +660,7 @@ async function sbPull(){
     rows.forEach(r=>{const u=STATE.units.find(x=>x.id===r.id||x.code===r.code);if(u){
       if(r.price!=null)u.price=r.price; if(r.status)u.status=r.status;
       if(r.notes!=null)u.notes=r.notes; if(r.customer!=null)u.customer=r.customer;
-      if(r.mark!=null)u.mark=r.mark; if(r.plan!=null){u.plan=r.plan; if(r.plan._use!==undefined)u.use=r.plan._use;}}});}
+      if(r.mark!=null)u.mark=r.mark; if(r.plan!=null){u.plan=r.plan; if(r.plan._use!==undefined)u.use=r.plan._use; if(r.plan._pm!==undefined)u.pm=r.plan._pm; if(r.plan._pmExt!==undefined)u.pmExt=r.plan._pmExt;}}});}
   if(sets&&sets[0]){const s=sets[0];
     if(s.passcode)STATE.settings.passcode=s.passcode;
     if(s.user_passcode)STATE.settings.userPasscode=s.user_passcode;
@@ -673,7 +673,7 @@ async function sbPull(){
 
 // Push one unit to Supabase (use is carried inside the plan jsonb to avoid a schema change)
 async function sbPushUnit(u){
-  const planOut=u.plan?{...u.plan,_use:(u.use||'')}:(u.use?{_use:u.use}:null);
+  const planOut=u.plan?{...u.plan,_use:(u.use||''),_pm:u.pm,_pmExt:(u.pmExt||0)}:(u.use?{_use:u.use,_pm:u.pm,_pmExt:(u.pmExt||0)}:null);
   await sbFetch('/rest/v1/units',{method:'POST',
     headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({id:u.id,code:u.code,price:u.price,status:u.status,
@@ -942,11 +942,13 @@ function openUnit(id){
         </div>
         <div class="field-row">
           <div class="field"><label>${t('totalArea')}</label><div class="static" style="color:var(--gold)">${u.area} m²</div></div>
-          <div class="field"><label>${u.pmExt?t('pricePerMInt'):t('pricePerM')}</label><div class="static">EGP ${money(u.pm)}</div></div>
+          <div class="field"><label>${u.pmExt?t('pricePerMInt'):t('pricePerM')}</label>
+            ${ROLE==='user'?`<div class="static">EGP ${money(u.pm)}</div>`:`<input type="number" id="uPm" value="${u.pm}" oninput="recalcFromPm()">`}</div>
         </div>
-        ${u.pmExt?`<div class="field"><label>${t('pricePerMExt')}</label><div class="static">EGP ${money(u.pmExt)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div></div>`:''}
+        ${(u.pmExt||u.areaExt)?`<div class="field"><label>${t('pricePerMExt')}</label>
+          ${ROLE==='user'?`<div class="static">EGP ${money(u.pmExt||0)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div>`:`<input type="number" id="uPmExt" value="${u.pmExt||0}" oninput="recalcFromPm()">`}</div>`:''}
         <div class="field"><label>${t('unitPrice')}</label>
-          <input type="number" id="uPrice" value="${u.price}" ${ROLE==='user'?'readonly':''}></div>
+          <input type="number" id="uPrice" value="${u.price}" oninput="recalcFromPrice()" ${ROLE==='user'?'readonly':''}></div>
         <div class="field"><label>${t('status')}</label>
           <select id="uStatus" ${ROLE==='user'?'disabled':''}>
             <option value="available"${u.status==='available'?' selected':''}>${t('available')}</option>
@@ -1044,8 +1046,24 @@ function applyModeVisibility(){
   if(ff)ff.style.display=fixed?'none':'';
   if(fx)fx.style.display=fixed?'':'none';
 }
+function recalcFromPm(){const u=MODAL_UNIT;
+  const pm=Number(document.getElementById('uPm').value)||0;
+  const pmExtEl=document.getElementById('uPmExt');
+  const pmExt=pmExtEl?(Number(pmExtEl.value)||0):(u.pmExt||0);
+  const price=u.areaExt?Math.round(pm*u.areaInt+pmExt*u.areaExt):Math.round(pm*u.area);
+  const pEl=document.getElementById('uPrice');if(pEl)pEl.value=price;
+  recalc();}
+function recalcFromPrice(){const u=MODAL_UNIT;
+  const price=Number(document.getElementById('uPrice').value)||0;
+  const pmExtEl=document.getElementById('uPmExt');
+  const pmExt=pmExtEl?(Number(pmExtEl.value)||0):(u.pmExt||0);
+  let pm; if(u.areaExt){pm=u.areaInt?Math.round((price-pmExt*u.areaExt)/u.areaInt):0;}else{pm=u.area?Math.round(price/u.area):0;}
+  const pmEl=document.getElementById('uPm');if(pmEl)pmEl.value=pm;
+  recalc();}
 function readPlanInputs(){
   const u=MODAL_UNIT;
+  const pmEl=document.getElementById('uPm');if(pmEl)u.pm=Number(pmEl.value)||0;
+  const pmExtEl=document.getElementById('uPmExt');if(pmExtEl)u.pmExt=Number(pmExtEl.value)||0;
   u.price=Number(document.getElementById('uPrice').value)||u.price;
   u.plan.dpType=DP_TYPE=document.getElementById('segPct').classList.contains('on')?'percent':'amount';
   u.plan.dpValue=Number(document.getElementById('pDpValue').value)||0;
