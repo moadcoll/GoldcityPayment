@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="2026-06-10-a">
+<meta name="app-version" content="2026-06-10-b">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold City · Seven B — Payment Plans</title>
 <style>
@@ -1433,6 +1433,39 @@ document.getElementById('topSevenB').src=mallLogoSrc();
 document.getElementById('loginGC').src=gcLogoSrc();
 document.getElementById('topGC').src=gcLogoSrc();
 applyI18n();
+
+/* ---------------- AUTO-UPDATE (refresh all devices when a new version is uploaded) ---------------- */
+const APP_VERSION=(document.querySelector('meta[name=app-version]')||{}).content||'0';
+let UPDATE_BUSY=false, LAST_CHECK=0;
+async function fetchLiveVersion(){
+  // read only the first chunk of the file (the version tag is in <head>), never the whole 1MB
+  const r=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store',headers:{'Range':'bytes=0-2047'}});
+  let txt='';
+  if(r.body&&r.body.getReader){const rd=r.body.getReader();const {value}=await rd.read();try{rd.cancel();}catch(e){}txt=new TextDecoder().decode(value||new Uint8Array());}
+  else{txt=await r.text();}
+  const m=txt.match(/name="app-version" content="([^"]+)"/);
+  return m?m[1]:null;
+}
+async function checkForUpdate(){
+  if(document.hidden||UPDATE_BUSY)return;
+  if(Date.now()-LAST_CHECK<45000)return; LAST_CHECK=Date.now();
+  try{
+    const live=await fetchLiveVersion();
+    if(live&&live!==APP_VERSION){
+      UPDATE_BUSY=true;
+      const qs=document.getElementById('qShell');
+      const busy=!!document.getElementById('unitOverlay')||(qs&&qs.style.display==='block');
+      if(busy){ // don't yank a half-built quote out from under the user
+        const bar=document.createElement('div');bar.className='toast';bar.style.cssText+=';cursor:pointer;background:var(--gold);color:#1a1410;font-weight:700';
+        bar.textContent='🔄 '+t('updateAvail');bar.onclick=()=>location.reload();
+        document.body.appendChild(bar);
+      }else{location.reload();}
+    }
+  }catch(e){}
+}
+setInterval(checkForUpdate, 5*60*1000);                       // every 5 min while the tab is open & visible
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkForUpdate();}); // and the moment they return to the tab
+setTimeout(checkForUpdate, 20000);                            // and once shortly after opening
 </script>
 </body>
 </html>
