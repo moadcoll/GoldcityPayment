@@ -288,6 +288,26 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
 .q-note{margin-top:14px;padding:11px 14px;border:1px solid #e3ddd0;border-radius:10px;background:#fbf8f1;font-size:.7rem;color:#555;line-height:1.6}
 .q-note b{color:#1a1714}
 
+/* Budget Finder */
+.finder-form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.finder-cap{background:linear-gradient(135deg,rgba(197,161,75,.14),rgba(197,161,75,.04));border:1px solid rgba(197,161,75,.35);border-radius:14px;padding:16px 18px}
+.finder-cap .cap-lab{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep)}
+.finder-cap .cap-val{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--gold);margin-top:2px}
+.finder-cap .cap-sub{font-size:.74rem;color:var(--muted);margin-top:4px}
+
+/* Floor Plans gallery */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.plan-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+.plan-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.plan-card-head{padding:12px 16px;font-weight:600;letter-spacing:.04em;color:var(--gold);border-bottom:1px solid var(--line)}
+.plan-card img{width:100%;display:block;background:#fff}
+.plan-card-zoom{padding:9px 16px;font-size:.72rem;color:var(--muted);text-align:center;border-top:1px solid var(--line)}
+.plan-zoom-ov{position:fixed;inset:0;z-index:120;background:rgba(8,7,5,.94);display:flex;flex-direction:column;backdrop-filter:blur(3px)}
+.plan-zoom-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;color:var(--gold);font-weight:600;letter-spacing:.05em}
+.plan-zoom-head button{background:none;border:1px solid var(--line-2);color:var(--txt);width:38px;height:38px;border-radius:9px;font-size:1.1rem;cursor:pointer}
+.plan-zoom-body{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:0 12px 18px}
+.plan-zoom-body img{max-width:100%;height:auto;border-radius:8px;background:#fff}
+
 @media print{
   html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0!important}
   #login,#app,.toast,.overlay{display:none!important}
@@ -411,6 +431,8 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
     <button class="nav-item active" data-view="dashboard" onclick="nav('dashboard')"><span class="ico">◧</span><span data-i18n="navDash">Dashboard</span></button>
     <button class="nav-item" data-view="inventory" onclick="nav('inventory')"><span class="ico">▦</span><span data-i18n="navInv">Inventory</span></button>
     <button class="nav-item" data-view="board" onclick="nav('board')"><span class="ico">◰</span><span data-i18n="navBoard">Availability</span></button>
+    <button class="nav-item" data-view="finder" onclick="nav('finder')"><span class="ico">⊜</span><span data-i18n="navFinder">Budget Finder</span></button>
+    <button class="nav-item" data-view="plans" onclick="nav('plans')"><span class="ico">▤</span><span data-i18n="navPlans">Floor Plans</span></button>
     <button class="nav-item admin-only" data-view="settings" onclick="nav('settings')"><span class="ico">⚙</span><span data-i18n="navSet">Settings</span></button>
     <div class="sidebar-foot">
       <div data-i18n="projectName">Seven B Mall</div>
@@ -561,6 +583,11 @@ const I18N={
   en:{brandName:'GOLD CITY',brandSub:'Developments',tagline:'Built. Not Promised.',mallCap:'Seven B · Al Shorouk',
     passcode:'Access Passcode',enter:'Enter Platform',export:'Export',import:'Import',
     navDash:'Dashboard',navInv:'Inventory',navBoard:'Availability',navSet:'Settings',
+    navFinder:'Budget Finder',navPlans:'Floor Plans',
+    finderHint:'Enter what the client can pay. We total it over the term and find available units priced within ±5%.',
+    finderDp:'Down payment (EGP)',finderInst:'Installment client can pay',finderYearly:'Yearly payment (optional)',finderYears:'Term (years)',
+    finderCapacity:'Client total capacity',finderFit:'Fit vs price',finderNone:'No available unit matches within 5%. Try adjusting the inputs.',finderEnter:'Enter the client\u2019s payment ability above to see matching units.',
+    plansHint:'All floor plans in one place — tap any plan to enlarge.',tapZoom:'Tap to enlarge',
     projectName:'Seven B Mall',units:'units',printPdf:'Print / Save PDF',back:'Back',
     totalUnits:'Total Inventory',available:'Available',reserved:'Reserved',sold:'Sold',negotiation:'Under Negotiation',
     invValue:'Inventory Value',byFloor:'Breakdown by Floor',byType:'By Unit Type',
@@ -595,6 +622,11 @@ const I18N={
   ar:{brandName:'جولد سيتي',brandSub:'للتطوير العقاري',tagline:'نبني... لا نَعِد.',mallCap:'سيفن بي · الشروق',
     passcode:'رمز الدخول',enter:'دخول المنصة',export:'تصدير',import:'استيراد',
     navDash:'الرئيسية',navInv:'الوحدات',navBoard:'الإتاحة',navSet:'الإعدادات',
+    navFinder:'مطابقة الميزانية',navPlans:'المخططات',
+    finderHint:'أدخل ما يستطيع العميل دفعه. نقوم بجمعه على مدة السداد ونعرض الوحدات المتاحة بسعر ضمن ±٥٪.',
+    finderDp:'المقدم (ج.م)',finderInst:'القسط الذي يستطيع دفعه',finderYearly:'دفعة سنوية (اختياري)',finderYears:'مدة السداد (سنوات)',
+    finderCapacity:'إجمالي قدرة العميل',finderFit:'المطابقة مقابل السعر',finderNone:'لا توجد وحدة متاحة تطابق ضمن ٥٪. جرّب تعديل المدخلات.',finderEnter:'أدخل قدرة العميل على السداد بالأعلى لعرض الوحدات المطابقة.',
+    plansHint:'كل المخططات في مكان واحد — اضغط على أي مخطط لتكبيره.',tapZoom:'اضغط للتكبير',
     projectName:'مول سيفن بي',units:'وحدة',printPdf:'طباعة / حفظ PDF',back:'رجوع',
     totalUnits:'إجمالي الوحدات',available:'متاحة',reserved:'محجوزة',sold:'مباعة',negotiation:'قيد التفاوض',
     invValue:'قيمة المخزون',byFloor:'التوزيع حسب الدور',byType:'حسب نوع الوحدة',
@@ -816,6 +848,8 @@ function nav(view){
   if(view==='dashboard')renderDashboard();
   else if(view==='inventory')renderInventory();
   else if(view==='board')renderBoard();
+  else if(view==='finder')renderFinder();
+  else if(view==='plans')renderPlans();
   else if(view==='settings')renderSettings();
 }
 
@@ -826,7 +860,7 @@ function renderDashboard(){
   let val=0;u.forEach(x=>{c[x.status]++;val+=x.price;});
   const floors=['B','F0','F1','F2','F3'];
   const byFloor=floors.map(f=>{const fu=u.filter(x=>x.floor===f);return {f,n:fu.length,v:fu.reduce((s,x)=>s+x.price,0),av:fu.filter(x=>x.status==='available').length};});
-  const types=['shop','clinic','pharmacy'];
+  const types=['shop','clinic','pharmacy','market','edu'];
   const byType=types.map(ty=>{const tu=u.filter(x=>x.type===ty);return {ty,n:tu.length};}).filter(x=>x.n);
   document.getElementById('main').innerHTML=`
     <div class="page-head"><div><div class="crumb">${t('quoteSub')}</div><h2>${t('navDash')}</h2></div></div>
@@ -842,7 +876,7 @@ function renderDashboard(){
     <div class="section-title">${t('byFloor')}</div>
     <div class="table-wrap" style="margin-bottom:24px"><table><thead><tr>
       <th>${t('floor')}</th><th>${t('units')}</th><th>${t('available')}</th><th>${t('invValue')}</th></tr></thead><tbody>
-      ${byFloor.map(b=>`<tr onclick="nav('inventory');setTimeout(()=>{document.getElementById('fFloor').value='${b.f}';applyFilters();},40)">
+      ${byFloor.map(b=>`<tr style="cursor:pointer" onclick="FILTERS.q='';FILTERS.floor='${b.f}';FILTERS.type='';FILTERS.status='';nav('inventory')">
         <td style="font-weight:600">${t(FLOOR_KEY[b.f])}</td><td>${b.n}</td>
         <td><span class="badge b-available">${b.av}</span></td><td class="price">EGP ${money(b.v)}</td></tr>`).join('')}
     </tbody></table></div>
@@ -919,6 +953,79 @@ function renderBoard(){
           <span class="dot ${u.status}"></span>
           <div class="uc">${codeLabel(u)}</div><div class="ua">${u.area} m² · ${t(u.type)}</div>
           <div class="up">EGP ${money(u.price)}</div></button>`).join('')}</div></div>`;}).join('')}`;
+}
+
+/* ---------------- BUDGET FINDER ---------------- */
+let FINDER={dp:0,inst:0,freq:'monthly',yearly:0,years:6};
+function renderFinder(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navFinder')}</h2></div></div>
+    <div class="flag-note" style="border-color:rgba(197,161,75,.3)"><span>⊜</span><span>${t('finderHint')}</span></div>
+    <div class="finder-form">
+      <div class="field-row">
+        <div class="field"><label>${t('finderDp')}</label><input type="number" id="fnDp" value="${FINDER.dp||''}" placeholder="0" oninput="runFinder()"></div>
+        <div class="field"><label>${t('finderYears')}</label><input type="number" id="fnYears" value="${FINDER.years}" oninput="runFinder()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>${t('finderInst')}</label><input type="number" id="fnInst" value="${FINDER.inst||''}" placeholder="0" oninput="runFinder()"></div>
+        <div class="field"><label>${t('frequency')}</label><select id="fnFreq" onchange="runFinder()">
+          <option value="monthly" ${FINDER.freq==='monthly'?'selected':''}>${t('monthly')}</option>
+          <option value="quarterly" ${FINDER.freq==='quarterly'?'selected':''}>${t('quarterly')}</option>
+          <option value="semi" ${FINDER.freq==='semi'?'selected':''}>${t('semi')}</option></select></div>
+      </div>
+      <div class="field"><label>${t('finderYearly')}</label><input type="number" id="fnYearly" value="${FINDER.yearly||''}" placeholder="0" oninput="runFinder()"></div>
+    </div>
+    <div class="finder-cap" id="fnCap"></div>
+    <div class="table-wrap" style="margin-top:14px"><table><thead><tr>
+      <th>${t('code')}</th><th>${t('floor')}</th><th>${t('price')}</th><th>${t('finderFit')}</th></tr></thead>
+      <tbody id="fnBody"></tbody></table></div>`;
+  runFinder();
+}
+function runFinder(){
+  const g=id=>document.getElementById(id);
+  FINDER.dp=Number(g('fnDp').value)||0;
+  FINDER.inst=Number(g('fnInst').value)||0;
+  FINDER.freq=g('fnFreq').value;
+  FINDER.yearly=Number(g('fnYearly').value)||0;
+  FINDER.years=Math.max(1,Number(g('fnYears').value)||1);
+  const per={monthly:12,quarterly:4,semi:2}[FINDER.freq]||12;
+  const capacity=FINDER.dp + FINDER.inst*per*FINDER.years + FINDER.yearly*FINDER.years;
+  g('fnCap').innerHTML=`<div class="cap-lab">${t('finderCapacity')}</div><div class="cap-val">EGP ${money(capacity)}</div>
+    <div class="cap-sub">${t('finderDp')}: EGP ${money(FINDER.dp)} · ${FINDER.inst?money(FINDER.inst)+' × '+(per*FINDER.years)+' '+t(FINDER.freq):''}${FINDER.yearly?' · '+money(FINDER.yearly)+'/yr × '+FINDER.years:''}</div>`;
+  const body=g('fnBody');
+  if(capacity<=0){body.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">${t('finderEnter')}</td></tr>`;return;}
+  const matches=STATE.units.filter(u=>u.status==='available').map(u=>{
+    const diff=(capacity-u.price)/u.price*100; // + means client can afford above price
+    return {u,diff};
+  }).filter(m=>Math.abs(m.diff)<=5).sort((a,b)=>Math.abs(a.diff)-Math.abs(b.diff));
+  if(!matches.length){body.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">${t('finderNone')}</td></tr>`;return;}
+  body.innerHTML=matches.map(({u,diff})=>{
+    const sign=diff>=0?'+':'';const cls=Math.abs(diff)<=2?'b-available':'b-negotiation';
+    return `<tr style="cursor:pointer" onclick="openUnit(${u.id})">
+      <td class="col-code">${codeLabel(u)}</td><td>${t(FLOOR_KEY[u.floor])}</td>
+      <td class="price">EGP ${money(u.price)}</td>
+      <td><span class="badge ${cls}">${sign}${diff.toFixed(1)}%</span></td></tr>`;}).join('');
+}
+
+/* ---------------- FLOOR PLANS GALLERY ---------------- */
+function renderPlans(){
+  const floors=['B','F0','F1','F2','F3'].filter(hasPlan);
+  document.getElementById('main').innerHTML=`
+    <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navPlans')}</h2></div></div>
+    <div class="flag-note" style="border-color:rgba(197,161,75,.3)"><span>▤</span><span>${t('plansHint')}</span></div>
+    <div class="plans-grid">
+      ${floors.map(f=>`<div class="plan-card" onclick="zoomPlan('${f}')">
+        <div class="plan-card-head">${t(FLOOR_KEY[f])}</div>
+        <img src="${planImgSrc(f)}" alt="${t(FLOOR_KEY[f])}" loading="lazy">
+        <div class="plan-card-zoom">⛶ ${t('tapZoom')}</div>
+      </div>`).join('')}
+    </div>`;
+}
+function zoomPlan(f){
+  const ov=document.createElement('div');ov.className='plan-zoom-ov';ov.onclick=()=>ov.remove();
+  ov.innerHTML=`<div class="plan-zoom-head"><span>${t(FLOOR_KEY[f])}</span><button onclick="this.closest('.plan-zoom-ov').remove()">✕</button></div>
+    <div class="plan-zoom-body"><img src="${planImgSrc(f)}" alt="plan"></div>`;
+  document.body.appendChild(ov);
 }
 
 /* ---------------- UNIT DETAIL + PLAN ---------------- */
