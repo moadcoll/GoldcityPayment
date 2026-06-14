@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="2026-06-10-b">
+<meta name="app-version" content="2026-06-13-secure-auth">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold City · Seven B — Payment Plans</title>
 <style>
@@ -398,10 +398,14 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
       <div class="mall-cap" data-i18n="mallCap">Seven B · Al Shorouk</div>
     </div>
     <div class="login-field">
-      <label data-i18n="passcode">Access Passcode</label>
-      <input type="password" id="pw" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+      <label data-i18n="emailLbl">Email</label>
+      <input type="email" id="loginEmail" autocomplete="username" inputmode="email" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn-gold" onclick="doLogin()" data-i18n="enter">Enter Platform</button>
+    <div class="login-field">
+      <label data-i18n="passcode">Password</label>
+      <input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-gold" id="loginBtn" onclick="doLogin()" data-i18n="enter">Enter Platform</button>
     <div class="login-err" id="loginErr"></div>
     <button class="ghost-btn" style="margin-top:16px;width:100%;justify-content:center;border:none;color:var(--muted-2)"
       onclick="toggleLang()" id="loginLang">العربية</button>
@@ -581,7 +585,7 @@ function buildPlan(o){
 /* ---------------- I18N ---------------- */
 const I18N={
   en:{brandName:'GOLD CITY',brandSub:'Developments',tagline:'Built. Not Promised.',mallCap:'Seven B · Al Shorouk',
-    passcode:'Access Passcode',enter:'Enter Platform',export:'Export',import:'Import',
+    passcode:'Password',emailLbl:'Email',enter:'Enter Platform',export:'Export',import:'Import',
     navDash:'Dashboard',navInv:'Inventory',navBoard:'Availability',navSet:'Settings',
     navFinder:'Budget Finder',navPlans:'Floor Plans',
     finderHint:'Enter what the client can pay. We total it over the term and find available units priced within ±5%.',
@@ -606,7 +610,7 @@ const I18N={
     ref:'Reference',date:'Date',schedule:'Payment Schedule',no:'No.',description:'Description',dueDate:'Due Date',
     paymentAmount:'Amount (EGP)',totalLabel:'Total',clientSign:'Client Signature',companySign:'For Gold City Developments',signNameDate:'Name & Date',signStamp:'Authorized Signature & Stamp',
     unitLoc:'Unit Location — Floor Plan',settingsTitle:'Settings',branding:'Branding',
-    companyName:'Company Name',mallName:'Mall / Project Name',changePass:'Admin Passcode',userPass:'Sales User Passcode',
+    companyName:'Company Name',mallName:'Mall / Project Name',changePass:'User Accounts',userPass:'',accountsNote:'Accounts are managed in Supabase. Each salesperson signs in with their own email and password. Roles (admin/sales) are set per user.',
     defConsultant:'Default Sales Consultant',saveSettings:'Save Settings',replaceGC:'Replace Gold City logo (optional)',
     replaceMall:'Replace Seven B logo (optional)',updateAvail:'New version available — tap to update',saved:'Saved',imported:'Data imported',exported:'Data exported',
     flagNote:'Review needed: Ground-floor codes 24 & 29 are absent from the price sheet (30 units, not 32). Also, a brochure rendering is branded "I\'M LIFE Outlet Mall" while the cover/contact use "Seven B" — confirm the correct project name in Settings.',
@@ -620,7 +624,7 @@ const I18N={
     unitTotal:'Unit Total',grandTotal:'Grand Total (incl. Maintenance)',yearEnd:'Year-End Settlement',
     separateNote:'separate, not included in unit price'},
   ar:{brandName:'جولد سيتي',brandSub:'للتطوير العقاري',tagline:'نبني... لا نَعِد.',mallCap:'سيفن بي · الشروق',
-    passcode:'رمز الدخول',enter:'دخول المنصة',export:'تصدير',import:'استيراد',
+    passcode:'كلمة المرور',emailLbl:'البريد الإلكتروني',enter:'دخول المنصة',export:'تصدير',import:'استيراد',
     navDash:'الرئيسية',navInv:'الوحدات',navBoard:'الإتاحة',navSet:'الإعدادات',
     navFinder:'مطابقة الميزانية',navPlans:'المخططات',
     finderHint:'أدخل ما يستطيع العميل دفعه. نقوم بجمعه على مدة السداد ونعرض الوحدات المتاحة بسعر ضمن ±٥٪.',
@@ -645,7 +649,7 @@ const I18N={
     ref:'المرجع',date:'التاريخ',schedule:'جدول السداد',no:'#',description:'البيان',dueDate:'تاريخ الاستحقاق',
     paymentAmount:'القيمة (ج.م)',totalLabel:'الإجمالي',clientSign:'توقيع العميل',companySign:'عن جولد سيتي للتطوير',signNameDate:'الاسم والتاريخ',signStamp:'التوقيع المعتمد والختم',
     unitLoc:'موقع الوحدة — مخطط الدور',settingsTitle:'الإعدادات',branding:'الهوية',
-    companyName:'اسم الشركة',mallName:'اسم المول / المشروع',changePass:'رمز المدير',userPass:'رمز مستخدم المبيعات',
+    companyName:'اسم الشركة',mallName:'اسم المول / المشروع',changePass:'حسابات المستخدمين',userPass:'',accountsNote:'تُدار الحسابات في Supabase. يدخل كل موظف ببريده وكلمة مروره. تُحدّد الصلاحية (مدير/مبيعات) لكل مستخدم.',
     defConsultant:'مستشار المبيعات الافتراضي',saveSettings:'حفظ الإعدادات',replaceGC:'استبدال شعار جولد سيتي (اختياري)',
     replaceMall:'استبدال شعار سيفن بي (اختياري)',updateAvail:'يوجد إصدار جديد — اضغط للتحديث',saved:'تم الحفظ',imported:'تم استيراد البيانات',exported:'تم تصدير البيانات',
     flagNote:'مراجعة مطلوبة: كودا الأرضي 24 و29 غير موجودين في قائمة الأسعار (30 وحدة وليست 32). كما يظهر في أحد رندرات البروشور اسم "I\'M LIFE Outlet Mall" بينما الغلاف وبيانات التواصل تستخدم "سيفن بي" — برجاء تأكيد اسم المشروع من الإعدادات.',
@@ -666,7 +670,56 @@ function t(k){return (I18N[LANG]&&I18N[LANG][k])||k;}
 const LS_KEY='goldcity_sevenb_state_v6';
 const SB_URL='https://mjkhkmqopvwsgagykzze.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qa2hrbXFvcHZ3c2dhZ3lrenplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzcyNTEsImV4cCI6MjA5NjYxMzI1MX0.6ZCTRacLhLgVUcO-Lzj5qWgKBHqtid4yJi--jPetDDQ';
-const SB_HDR=()=>({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=minimal'});
+/* ---- AUTH: session tokens (Supabase GoTrue, raw fetch, no external lib) ---- */
+const AUTH_KEY='goldcity_sevenb_auth_v1';
+let AUTH={access:null,refresh:null,user:null,expires:0};
+function authLoad(){try{const s=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');if(s&&s.access){AUTH=s;return true;}}catch(e){}return false;}
+function authSave(){try{localStorage.setItem(AUTH_KEY,JSON.stringify(AUTH));}catch(e){}}
+function authClear(){AUTH={access:null,refresh:null,user:null,expires:0};try{localStorage.removeItem(AUTH_KEY);}catch(e){}}
+function bearer(){return AUTH.access||SB_KEY;} // logged-in user's token drives RLS; anon key only before login
+// All PostgREST calls now authenticate AS THE LOGGED-IN USER (apikey stays the anon key, Authorization is the user JWT)
+const SB_HDR=()=>({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+bearer(),'Prefer':'return=minimal'});
+
+// Email+password sign-in via GoTrue
+async function authLogin(email,password){
+  const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({email:email.trim(),password})});
+  const d=await r.json().catch(()=>null);
+  if(!r.ok||!d||!d.access_token){return {ok:false,msg:(d&&d.error_description)||(d&&d.msg)||'Invalid email or password'};}
+  AUTH={access:d.access_token,refresh:d.refresh_token,user:d.user,expires:Date.now()+(d.expires_in||3600)*1000};
+  authSave();return {ok:true};
+}
+// Refresh an expiring session silently (keeps reps logged in across reboots until refresh token dies)
+async function authRefresh(){
+  if(!AUTH.refresh)return false;
+  const r=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({refresh_token:AUTH.refresh})});
+  const d=await r.json().catch(()=>null);
+  if(!r.ok||!d||!d.access_token){authClear();return false;}
+  AUTH={access:d.access_token,refresh:d.refresh_token,user:d.user,expires:Date.now()+(d.expires_in||3600)*1000};
+  authSave();return true;
+}
+async function authEnsure(){ // call before protected work; refresh if within 60s of expiry
+  if(!AUTH.access)return false;
+  if(Date.now()>AUTH.expires-60000){return await authRefresh();}
+  return true;
+}
+// Read this user's role from profiles (server-enforced; not a JS passcode)
+async function fetchMyRole(){
+  if(!AUTH.user)return 'sales';
+  try{const r=await fetch(SB_URL+'/rest/v1/profiles?select=role,full_name&id=eq.'+AUTH.user.id,
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+bearer()}});
+    const d=await r.json().catch(()=>null);
+    if(Array.isArray(d)&&d[0]){AUTH.user._name=d[0].full_name||AUTH.user.email;return d[0].role==='admin'?'admin':'sales';}}
+  catch(e){}
+  return 'sales';
+}
+async function authLogout(){
+  try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+bearer()}});}catch(e){}
+  authClear();
+}
 
 let STATE=null;
 function defaultState(){return {units:JSON.parse(JSON.stringify(SEED_UNITS)),
@@ -679,7 +732,10 @@ function lsLoad(){try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.pars
 
 // Supabase helpers
 async function sbFetch(path,opts={}){
-  try{const r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}});
+  try{
+    await authEnsure();
+    let r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}});
+    if(r.status===401){ if(await authRefresh()){ r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}}); } }
     if(!r.ok)return null; const txt=await r.text(); return txt?JSON.parse(txt):null;}
   catch(e){return null;}}
 
@@ -694,8 +750,6 @@ async function sbPull(){
       if(r.notes!=null)u.notes=r.notes; if(r.customer!=null)u.customer=r.customer;
       if(r.mark!=null)u.mark=r.mark; if(r.plan!=null){u.plan=r.plan; if(r.plan._use!==undefined)u.use=r.plan._use; if(r.plan._pm!==undefined)u.pm=r.plan._pm; if(r.plan._pmExt!==undefined)u.pmExt=r.plan._pmExt;}}});}
   if(sets&&sets[0]){const s=sets[0];
-    if(s.passcode)STATE.settings.passcode=s.passcode;
-    if(s.user_passcode)STATE.settings.userPasscode=s.user_passcode;
     if(s.company_name)STATE.settings.companyName=s.company_name;
     if(s.mall_name)STATE.settings.mallName=s.mall_name;
     if(s.consultant!=null)STATE.settings.consultant=s.consultant;
@@ -717,7 +771,7 @@ async function sbPushSettings(){
   const s=STATE.settings;
   await sbFetch('/rest/v1/settings',{method:'POST',
     headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
-    body:JSON.stringify({id:1,passcode:s.passcode,user_passcode:s.userPasscode,
+    body:JSON.stringify({id:1,
       company_name:s.companyName,mall_name:s.mallName,consultant:s.consultant||'',
       gc_logo:s.gcLogo&&s.gcLogo.length<500000?s.gcLogo:undefined,
       mall_logo:s.mallLogo&&s.mallLogo.length<500000?s.mallLogo:undefined,
@@ -810,25 +864,55 @@ function applyHighlight(imgEl,u){
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);}
 
 /* ---------------- AUTH ---------------- */
-let ROLE='admin';
-function doLogin(){
-  const v=document.getElementById('pw').value;
-  const s=STATE.settings;
-  if(v===s.passcode){ROLE='admin';}
-  else if(s.userPasscode && v===s.userPasscode){ROLE='user';}
-  else {document.getElementById('loginErr').textContent=LANG==='ar'?'رمز غير صحيح':'Incorrect passcode';return;}
+let ROLE='sales';
+async function doLogin(){
+  const btn=document.getElementById('loginBtn');
+  const email=document.getElementById('loginEmail').value;
+  const pw=document.getElementById('pw').value;
+  const errEl=document.getElementById('loginErr');
+  if(!email||!pw){errEl.textContent=LANG==='ar'?'أدخل البريد وكلمة المرور':'Enter email and password';return;}
+  errEl.textContent=LANG==='ar'?'جارٍ الدخول…':'Signing in…';
+  if(btn)btn.disabled=true;
+  const res=await authLogin(email,pw);
+  if(!res.ok){errEl.textContent=LANG==='ar'?'بريد أو كلمة مرور غير صحيحة':'Incorrect email or password';if(btn)btn.disabled=false;return;}
+  ROLE=await fetchMyRole();
+  authSave();
+  errEl.textContent='';
+  if(btn)btn.disabled=false;
+  enterApp();
+}
+function enterApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='grid';
   applyRole();
   nav('dashboard');
+  // pull fresh data AS the logged-in user (boot pull ran before login), then refresh view
+  sbPull().then(()=>nav(CURRENT||'dashboard'));
+}
+// Restore a saved session on load so reps log in once per device, not every visit
+async function restoreSession(){
+  if(!authLoad())return false;
+  if(!(await authEnsure())){authClear();return false;}
+  ROLE=await fetchMyRole();
+  authSave();
+  return true;
 }
 function applyRole(){
-  document.body.classList.toggle('role-user', ROLE==='user');
-  const badge=document.getElementById('roleBadge'); if(badge) badge.textContent = ROLE==='admin' ? t('roleAdmin') : t('roleUser');
-  // hide admin-only controls for users
-  document.querySelectorAll('.admin-only').forEach(el=>{el.style.display = ROLE==='user' ? 'none' : '';});
+  const isSales = ROLE!=='admin';
+  document.body.classList.toggle('role-user', isSales);
+  const badge=document.getElementById('roleBadge');
+  if(badge) badge.textContent = isSales ? t('roleUser') : t('roleAdmin');
+  document.querySelectorAll('.admin-only').forEach(el=>{el.style.display = isSales ? 'none' : '';});
 }
-function logout(){document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('pw').value='';document.getElementById('loginErr').textContent='';ROLE='admin';}
+async function logout(){
+  await authLogout();
+  ROLE='sales';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  const pw=document.getElementById('pw'); if(pw)pw.value='';
+  const em=document.getElementById('loginEmail'); if(em)em.value='';
+  const er=document.getElementById('loginErr'); if(er)er.textContent='';
+}
 
 /* ---------------- LANG ---------------- */
 function applyI18n(){
@@ -1032,7 +1116,7 @@ function zoomPlan(f){
 let MODAL_UNIT=null;
 function openUnit(id){
   const u=STATE.units.find(x=>x.id===id);if(!u)return;MODAL_UNIT=u;
-  if(!u.plan)u.plan={dpType:'percent',dpValue:10,freq:'monthly',years:6,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',consultant:STATE.settings.consultant||'',
+  if(!u.plan)u.plan={dpType:'percent',dpValue:25,freq:'monthly',years:4,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',consultant:STATE.settings.consultant||'',
     mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'};
   if(u.plan.discountType===undefined)u.plan.discountType=(u.plan.discount>0?'amount':'percent');
   if(u.plan.mode===undefined){u.plan.mode='equal';u.plan.monthlyFixed=0;u.plan.maintenanceOn=true;u.plan.maintenancePct=10;u.plan.maintenanceDate='2027-01-01';u.plan.deliveryOn=true;u.plan.deliveryPct=50;u.plan.deliveryDate='2027-03-01';}
@@ -1050,24 +1134,24 @@ function openUnit(id){
         <div class="field-row">
           <div class="field"><label>${t('totalArea')}</label><div class="static" style="color:var(--gold)">${u.area} m²</div></div>
           <div class="field"><label>${u.pmExt?t('pricePerMInt'):t('pricePerM')}</label>
-            ${ROLE==='user'?`<div class="static">EGP ${money(u.pm)}</div>`:`<input type="number" id="uPm" value="${u.pm}" oninput="recalcFromPm()">`}</div>
+            ${ROLE!=='admin'?`<div class="static">EGP ${money(u.pm)}</div>`:`<input type="number" id="uPm" value="${u.pm}" oninput="recalcFromPm()">`}</div>
         </div>
         ${(u.pmExt||u.areaExt)?`<div class="field"><label>${t('pricePerMExt')}</label>
-          ${ROLE==='user'?`<div class="static">EGP ${money(u.pmExt||0)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div>`:`<input type="number" id="uPmExt" value="${u.pmExt||0}" oninput="recalcFromPm()">`}</div>`:''}
+          ${ROLE!=='admin'?`<div class="static">EGP ${money(u.pmExt||0)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div>`:`<input type="number" id="uPmExt" value="${u.pmExt||0}" oninput="recalcFromPm()">`}</div>`:''}
         <div class="field"><label>${t('unitPrice')}</label>
-          <input type="number" id="uPrice" value="${u.price}" oninput="recalcFromPrice()" ${ROLE==='user'?'readonly':''}></div>
+          <input type="number" id="uPrice" value="${u.price}" oninput="recalcFromPrice()" ${ROLE!=='admin'?'readonly':''}></div>
         <div class="field"><label>${t('status')}</label>
-          <select id="uStatus" ${ROLE==='user'?'disabled':''}>
+          <select id="uStatus" ${ROLE!=='admin'?'disabled':''}>
             <option value="available"${u.status==='available'?' selected':''}>${t('available')}</option>
             <option value="reserved"${u.status==='reserved'?' selected':''}>${t('reserved')}</option>
             <option value="negotiation"${u.status==='negotiation'?' selected':''}>${t('negotiation')}</option>
             <option value="sold"${u.status==='sold'?' selected':''}>${t('sold')}</option></select></div>
-        <div class="field"><label>${t('notes')}</label><textarea id="uNotes" rows="2" ${ROLE==='user'?'readonly':''}>${u.notes||''}</textarea></div>
-        <div class="field"><label>${t('unitUse')}</label><input id="uUse" value="${u.use||''}" placeholder="${t('shop')}, ${t('market')}…" ${ROLE==='user'?'readonly':''}></div>
+        <div class="field"><label>${t('notes')}</label><textarea id="uNotes" rows="2" ${ROLE!=='admin'?'readonly':''}>${u.notes||''}</textarea></div>
+        <div class="field"><label>${t('unitUse')}</label><input id="uUse" value="${u.use||''}" placeholder="${t('shop')}, ${t('market')}…" ${ROLE!=='admin'?'readonly':''}></div>
         <div class="field"><label>${t('unitLoc')}</label>
           ${!hasPlan(u.floor)
             ? `<div class="plan-frame" id="planFrame" style="display:flex;align-items:center;justify-content:center;min-height:120px;color:var(--muted);font-size:.85rem">${t('noPlan')}</div>`
-            : ROLE==='user'
+            : ROLE!=='admin'
             ? `<div class="plan-frame" id="planFrame"><img class="plan-floorplan" id="planImg" src="${planImgSrc(u.floor)}" alt="plan"></div>`
             : `<div class="plan-frame clickable" id="planFrame" onmousedown="planDown(event)">
                  <img class="plan-floorplan" id="planImg" src="${planImgSrc(u.floor)}" alt="plan" draggable="false">
@@ -1393,8 +1477,7 @@ function renderSettings(){
       <div class="field"><label>${t('companyName')}</label><input id="setCompany" value="${s.companyName}"></div>
       <div class="field"><label>${t('mallName')}</label><input id="setMall" value="${s.mallName}"></div>
       <div class="field"><label>${t('defConsultant')}</label><input id="setConsultant" value="${s.consultant||''}"></div>
-      <div class="field"><label>${t('changePass')}</label><input id="setPass" value="${s.passcode}"></div>
-      <div class="field"><label>${t('userPass')}</label><input id="setUserPass" value="${s.userPasscode||''}"></div>
+      <div class="field"><label>${t('changePass')}</label><div class="static" style="font-size:.85rem;color:var(--muted-2);line-height:1.5">${t('accountsNote')}</div></div>
       <div class="field"><label>${t('replaceGC')}</label><input type="file" accept="image/*" onchange="uploadLogo(event,'gcLogo')">
         <div class="logo-preview" style="background:#1c1916"><img src="${gcLogoSrc()}"></div></div>
       <div class="field"><label>${t('replaceMall')}</label><input type="file" accept="image/*" onchange="uploadLogo(event,'mallLogo')">
@@ -1411,8 +1494,6 @@ function saveSettings(){
   STATE.settings.companyName=document.getElementById('setCompany').value;
   STATE.settings.mallName=document.getElementById('setMall').value;
   STATE.settings.consultant=document.getElementById('setConsultant').value;
-  STATE.settings.passcode=document.getElementById('setPass').value;
-  STATE.settings.userPasscode=document.getElementById('setUserPass').value;
   persistSettings();toast(t('saved'));}
 
 /* ---------------- EXPORT / IMPORT ---------------- */
@@ -1433,6 +1514,9 @@ document.getElementById('topSevenB').src=mallLogoSrc();
 document.getElementById('loginGC').src=gcLogoSrc();
 document.getElementById('topGC').src=gcLogoSrc();
 applyI18n();
+
+// Auto-restore a saved session: logged-in devices skip the login screen
+restoreSession().then(ok=>{ if(ok) enterApp(); });
 
 /* ---------------- AUTO-UPDATE (refresh all devices when a new version is uploaded) ---------------- */
 const APP_VERSION=(document.querySelector('meta[name=app-version]')||{}).content||'0';
