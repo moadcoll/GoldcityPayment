@@ -5,8 +5,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="app-version" content="2026-06-10-b">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="app-version" content="2026-06-15-EDITING-pen-polygon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Gold City · Seven B — Payment Plans</title>
 <style>
 :root{
@@ -143,7 +143,22 @@ tbody tr:last-child td{border-bottom:none}
 .unit-chip{border:1px solid var(--line-2);border-radius:10px;padding:12px 12px;background:var(--panel);
   transition:.12s;text-align:start;position:relative;overflow:hidden}
 .unit-chip:hover{transform:translateY(-2px);border-color:var(--gold)}
+.unit-chip,tr[onclick]{-webkit-tap-highlight-color:transparent}
+.unit-chip:active{opacity:.55;transform:scale(.97);border-color:var(--gold)}
+tr[onclick]{transition:background .12s,opacity .12s}
+tr[onclick]:active{opacity:.55;background:rgba(197,161,75,.12)}
 .unit-chip .dot{position:absolute;inset-block-start:11px;inset-inline-end:11px;width:9px;height:9px;border-radius:50%}
+.chip-info{position:absolute;inset-block-start:8px;inset-inline-start:8px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line-2);background:rgba(0,0,0,.28);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-style:italic;font-weight:700;font-family:var(--serif);z-index:3;-webkit-tap-highlight-color:transparent}
+.chip-info:active{opacity:.5;transform:scale(.9)}
+.sheet-ov{position:fixed;inset:0;z-index:72;background:rgba(8,7,5,.6);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.sheet{width:100%;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px 18px calc(18px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto;animation:sheetUp .22s ease}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-grip{width:42px;height:5px;border-radius:3px;background:var(--line-2);margin:2px auto 14px}
+.sheet h3{margin:0;color:var(--gold);font-family:var(--serif);font-size:1.25rem}
+.sheet .b-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.sheet .b-cell{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.02)}
+.sheet .b-cell .k{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sheet .b-cell .v{font-size:.95rem;margin-top:3px;font-variant-numeric:tabular-nums}
 .unit-chip .uc{font-weight:800;color:var(--gold);font-family:var(--serif);font-size:.92rem}
 .unit-chip .ua{font-size:.74rem;color:var(--muted);margin-top:3px}
 .unit-chip .up{font-size:.74rem;margin-top:6px;font-variant-numeric:tabular-nums}
@@ -297,6 +312,44 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
 
 /* Floor Plans gallery */
 .plans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.fp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+.fp-tab{padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted);font-size:.82rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fp-tab.on{background:var(--gold);color:#1a1410;border-color:var(--gold);font-weight:700}
+.fp-stage{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0d0b08}
+.fp-wrap{position:relative;display:block;line-height:0;width:100%}
+.fp-wrap img{display:block;width:100%;height:auto;-webkit-user-drag:none;user-select:none}
+.fp-wrap.tagging{cursor:crosshair}
+.fp-wrap.tagging .fp-hot{pointer-events:none}
+.fp-hot{position:absolute;transform:translate(-50%,-50%);width:22px;height:22px;padding:0;border:none;background:transparent;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent}
+.fp-hot .fp-glow{position:absolute;left:50%;top:50%;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid rgba(197,161,75,.7);background:rgba(197,161,75,.14);transition:width .15s,height .15s,background .15s,box-shadow .15s}
+.fp-hot:hover .fp-glow,.fp-hot:active .fp-glow{width:54px;height:54px;background:rgba(197,161,75,.34);box-shadow:0 0 0 3px rgba(197,161,75,.22)}
+.fp-hot .fp-pin{position:absolute;left:50%;top:-8px;transform:translate(-50%,-100%);background:var(--gold);color:#1a1410;font-weight:800;font-size:.6rem;padding:2px 7px;border-radius:6px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.fp-hot:hover .fp-pin,.fp-hot:active .fp-pin{opacity:1}
+.fp-box{transform:none;width:auto;height:auto;border-radius:5px;border:1.5px solid rgba(197,161,75,.18);background:rgba(197,161,75,.04);transition:border-color .15s,background .15s,box-shadow .15s}
+.fp-box .fp-glow{display:none}
+.fp-box:hover,.fp-box:active{border-color:#C5A14B;background:rgba(197,161,75,.32);box-shadow:0 0 0 2px rgba(197,161,75,.22)}
+.fp-box .fp-pin{left:50%;top:0;transform:translate(-50%,-115%)}
+.fp-box.sel{border-color:#C5A14B;background:rgba(197,161,75,.28)}
+.fp-box.sel .fp-pin{opacity:1}
+.fp-dragrect{position:absolute;display:none;border:2px solid #C5A14B;background:rgba(197,161,75,.30);pointer-events:none;z-index:6;border-radius:4px}
+.fp-poly{transform:none;width:auto;height:auto;background:rgba(197,161,75,.06);border:none;transition:background .15s}
+.fp-poly:hover,.fp-poly:active,.fp-poly.sel{background:rgba(197,161,75,.42)}
+.fp-pensvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;overflow:visible}
+.fp-wrap.penning{cursor:crosshair}
+.fp-modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.fp-mode{padding:7px 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-size:.82rem;cursor:pointer}
+.fp-mode.on{background:var(--gold);color:#1a1410;border-color:var(--gold);font-weight:700}
+.fp-pen-tools{display:inline-flex;gap:6px;margin-inline-start:8px}
+.fp-pen-tools .btn{padding:6px 12px;font-size:.8rem}
+.fp-tagcursor{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.72);color:var(--gold);font-size:.72rem;padding:5px 10px;border-radius:8px;z-index:4;pointer-events:none;line-height:1.2}
+.fp-taglist{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel)}
+.fp-tl-head{font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.fp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.fp-chip{padding:6px 11px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.03);color:#ddd6c8;font-size:.78rem;cursor:pointer;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+.fp-chip.done{color:var(--green);border-color:rgba(70,160,90,.35)}
+.fp-chip.active{background:var(--gold);color:#1a1410;border-color:var(--gold);font-weight:700}
+.fp-tl-foot{margin-top:10px;font-size:.8rem}
+.fp-legend{margin-top:10px;color:var(--muted);font-size:.82rem}
 .plan-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
 .plan-card:hover{border-color:var(--gold);transform:translateY(-2px)}
 .plan-card-head{padding:12px 16px;font-weight:600;letter-spacing:.04em;color:var(--gold);border-bottom:1px solid var(--line)}
@@ -307,6 +360,16 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
 .plan-zoom-head button{background:none;border:1px solid var(--line-2);color:var(--txt);width:38px;height:38px;border-radius:9px;font-size:1.1rem;cursor:pointer}
 .plan-zoom-body{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:0 12px 18px}
 .plan-zoom-body img{max-width:100%;height:auto;border-radius:8px;background:#fff}
+.plan-stage{position:relative;display:inline-block;line-height:0}
+.plan-stage>img{display:block;max-width:100%;height:auto;border-radius:8px;background:#fff}
+.plan-hotspot{position:absolute;cursor:pointer;border-radius:50%;border:2px solid rgba(197,161,75,.5);background:rgba(197,161,75,.08);transition:background .15s,box-shadow .15s,border-color .15s,transform .12s;-webkit-tap-highlight-color:transparent;z-index:2}
+.plan-hotspot.box{border-radius:8px}
+.plan-hotspot:hover,.plan-hotspot:active{background:rgba(197,161,75,.34);border-color:var(--gold);box-shadow:0 0 0 5px rgba(197,161,75,.18)}
+.plan-hotspot:active{transform:translate(-50%,-50%) scale(.94)}
+.plan-hotspot.box:active{transform:scale(.97)}
+.plan-hotspot .hs-code{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:5px;background:var(--gold);color:#1a1410;font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.plan-hotspot:hover .hs-code{opacity:1}
+.plan-zoom-foot{padding:10px 18px calc(12px + env(safe-area-inset-bottom));color:var(--muted);font-size:.78rem;text-align:center;border-top:1px solid var(--line)}
 
 @media print{
   html,body{height:auto!important;overflow:visible!important;background:#fff!important;margin:0!important}
@@ -365,14 +428,14 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
   .table-wrap table{min-width:560px}
 
   /* modal becomes near full-screen, scrollable, single column */
-  .overlay{padding:0;align-items:stretch}
-  .modal{width:100%;min-height:100vh;border-radius:0;border:none;display:flex;flex-direction:column}
-  .modal-body{grid-template-columns:1fr;overflow-y:auto;flex:1}
+  .overlay{padding:0;align-items:stretch;height:100dvh;bottom:auto;overflow:hidden}
+  .modal{width:100%;height:100vh;height:100dvh;max-height:100dvh;border-radius:0;border:none;display:flex;flex-direction:column}
+  .modal-body{grid-template-columns:1fr;overflow-y:auto;flex:1;min-height:0}
   .modal-col{padding:16px 16px}
   .modal-col.left{border-inline-end:none;border-bottom:1px solid var(--line)}
   .modal-head{padding:14px 16px;position:sticky;top:0;z-index:2}
   .modal-head .mh-code{font-size:1.2rem}
-  .modal-foot{padding:12px 14px;position:sticky;bottom:0}
+  .modal-foot{padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));position:sticky;bottom:0}
   .modal-foot .btn{flex:1;justify-content:center;padding:12px 10px}
   .field-row,.field-row-3{grid-template-columns:1fr}
 
@@ -398,10 +461,14 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
       <div class="mall-cap" data-i18n="mallCap">Seven B · Al Shorouk</div>
     </div>
     <div class="login-field">
-      <label data-i18n="passcode">Access Passcode</label>
-      <input type="password" id="pw" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+      <label data-i18n="emailLbl">Email</label>
+      <input type="email" id="loginEmail" autocomplete="username" inputmode="email" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn-gold" onclick="doLogin()" data-i18n="enter">Enter Platform</button>
+    <div class="login-field">
+      <label data-i18n="passcode">Password</label>
+      <input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-gold" id="loginBtn" onclick="doLogin()" data-i18n="enter">Enter Platform</button>
     <div class="login-err" id="loginErr"></div>
     <button class="ghost-btn" style="margin-top:16px;width:100%;justify-content:center;border:none;color:var(--muted-2)"
       onclick="toggleLang()" id="loginLang">العربية</button>
@@ -433,6 +500,7 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
     <button class="nav-item" data-view="board" onclick="nav('board')"><span class="ico">◰</span><span data-i18n="navBoard">Availability</span></button>
     <button class="nav-item" data-view="finder" onclick="nav('finder')"><span class="ico">⊜</span><span data-i18n="navFinder">Budget Finder</span></button>
     <button class="nav-item" data-view="plans" onclick="nav('plans')"><span class="ico">▤</span><span data-i18n="navPlans">Floor Plans</span></button>
+    <button class="nav-item" data-view="shared" onclick="nav('shared')"><span class="ico">❑</span><span data-i18n="navSaved">Saved Plans</span></button>
     <button class="nav-item admin-only" data-view="settings" onclick="nav('settings')"><span class="ico">⚙</span><span data-i18n="navSet">Settings</span></button>
     <div class="sidebar-foot">
       <div data-i18n="projectName">Seven B Mall</div>
@@ -523,14 +591,27 @@ const QR=(function(){
 })();
 
 /* ---------------- PAYMENT ENGINE ---------------- */
+function parseDate(s){
+  if(s instanceof Date)return new Date(s.getFullYear(),s.getMonth(),s.getDate());
+  if(typeof s==='string'){const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);}
+  const d=new Date(s);return new Date(d.getFullYear(),d.getMonth(),d.getDate());
+}
+function addMonths(base,n){
+  const d=new Date(base);const day=d.getDate();
+  d.setDate(1);d.setMonth(d.getMonth()+n);
+  const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  d.setDate(Math.min(day,lastDay));
+  return d;
+}
 function buildPlan(o){
   const price=o.price;
   const dp=o.dpType==='percent'?price*o.dpValue/100:o.dpValue;
-  const balloon=o.balloon||0;
+  const balloons=(o.balloons||[]).map(b=>({amount:Number(b.amount)||0,date:b.date||''})).filter(b=>b.amount>0);
+  const balloon=balloons.reduce((s,b)=>s+b.amount,0);
   const years=o.years||1;
-  const start=o.startDate?new Date(o.startDate):new Date();
+  const start=o.startDate?parseDate(o.startDate):new Date();
   const financed=price-dp-balloon; if(financed<0){}
-  const dd=o.deliveryDate?new Date(o.deliveryDate):null;
+  const dd=o.deliveryDate?parseDate(o.deliveryDate):null;
   const T=price*((o.deliveryPct||50)/100); // amount that must be reached by the delivery date
   let delivery=null, deliveryAmount=0;
   const rows=[{type:'dp',date:new Date(start),amount:dp}];
@@ -540,14 +621,14 @@ function buildPlan(o){
     const annualQuota=fin/years;
     const effMonthly=Math.max(0, Math.min(o.monthlyFixed||0, annualQuota/12));
     for(let y=0;y<years;y++){
-      for(let m=1;m<=12;m++){const d=new Date(start);d.setMonth(d.getMonth()+y*12+m);rows.push({type:'inst',date:d,amount:effMonthly});}
+      for(let m=1;m<=12;m++){const d=addMonths(start,y*12+m);rows.push({type:'inst',date:d,amount:effMonthly});}
       const rest=annualQuota-effMonthly*12;
-      if(rest>0.5){const d=new Date(start);d.setMonth(d.getMonth()+(y+1)*12);rows.push({type:'yearend',date:d,amount:rest});}
+      if(rest>0.5){const d=addMonths(start,(y+1)*12);rows.push({type:'yearend',date:d,amount:rest});}
     }
   }else{
     const step=o.freq==='monthly'?1:o.freq==='quarterly'?3:o.freq==='semi'?6:Number(o.freq)||1;
     let count=Math.floor(Math.round(years*12)/step);if(count<1)count=1;
-    const dates=[];for(let i=1;i<=count;i++){const d=new Date(start);d.setMonth(d.getMonth()+i*step);dates.push(d);}
+    const dates=[];for(let i=1;i<=count;i++){const d=addMonths(start,i*step);dates.push(d);}
     let per=financed/count;
     if(o.deliveryOn && dd){
       const k=dates.filter(d=>d<=dd).length;   // installments due on/before delivery
@@ -561,7 +642,8 @@ function buildPlan(o){
     for(let i=0;i<count;i++){rows.push({type:'inst',date:dates[i],amount:per});}
   }
   if(delivery) rows.push({type:'delivery',date:delivery.date,amount:deliveryAmount});
-  if(balloon>0){const d=new Date(start);d.setMonth(d.getMonth()+Math.round(years*12));rows.push({type:'balloon',date:d,amount:balloon});}
+  if(balloon>0){const endd=()=>addMonths(start,Math.round(years*12));
+    balloons.forEach(b=>{rows.push({type:'balloon',date:b.date?parseDate(b.date):endd(),amount:b.amount});});}
   rows.sort((a,b)=> (a.date-b.date) || (a.type==='dp'?-1:b.type==='dp'?1:0));
   // reconcile any rounding so the unit total is exactly the price
   const sumNow=rows.reduce((s,r)=>s+r.amount,0);
@@ -570,7 +652,7 @@ function buildPlan(o){
   let k=0; rows.forEach(r=>{ if(r.type==='inst'){r.n=++k;} });
   // MAINTENANCE: separate, NOT part of unit price
   let maintenance=null;
-  if(o.maintenanceOn){maintenance={date:new Date(o.maintenanceDate),amount:price*((o.maintenancePct||10)/100),pct:(o.maintenancePct||10)};}
+  if(o.maintenanceOn){maintenance={date:parseDate(o.maintenanceDate),amount:price*((o.maintenancePct||10)/100),pct:(o.maintenancePct||10)};}
   const unitTotal=rows.reduce((s,r)=>s+r.amount,0);
   const grandTotal=unitTotal+(maintenance?maintenance.amount:0);
   const insts=rows.filter(r=>r.type==='inst');
@@ -581,13 +663,20 @@ function buildPlan(o){
 /* ---------------- I18N ---------------- */
 const I18N={
   en:{brandName:'GOLD CITY',brandSub:'Developments',tagline:'Built. Not Promised.',mallCap:'Seven B · Al Shorouk',
-    passcode:'Access Passcode',enter:'Enter Platform',export:'Export',import:'Import',
+    passcode:'Password',emailLbl:'Email',enter:'Enter Platform',export:'Export',import:'Import',
     navDash:'Dashboard',navInv:'Inventory',navBoard:'Availability',navSet:'Settings',
     navFinder:'Budget Finder',navPlans:'Floor Plans',
     finderHint:'Enter what the client can pay. We total it over the term and find available units priced within ±5%.',
     finderDp:'Down payment (EGP)',finderInst:'Installment client can pay',finderYearly:'Yearly payment (optional)',finderYears:'Term (years)',
-    finderCapacity:'Client total capacity',finderFit:'Fit vs price',finderNone:'No available unit matches within 5%. Try adjusting the inputs.',finderEnter:'Enter the client\u2019s payment ability above to see matching units.',
+    finderCapacity:'Client total capacity',finderFit:'Fit vs price',finderNone:'No available unit matches within 5%. Try adjusting the inputs.',
+    cashLbl:'Cash',installmentsLbl:'Installments',
+    cashDiscLbl:'Cash discount (%)',cashDiscHint:'Applied only when Cash is selected. List price minus this %.',
+    finderCashBox:'Full amount client can pay (cash)',finderCashHint:'Cash price = list price minus cash discount. We show available units within \\u00b15% of this amount.',finderCashFit:'Fit vs cash price',
+    payCash:'Cash',cashFullPay:'Full cash payment, no installments',cashPriceLbl:'Cash price',cashSavingLbl:'Cash discount',
+    combineBtn:'Combine units',combineTitle:'Combine units into one plan',combineHint:'Pick up to 4 available units. Their prices are summed into one plan.',combineSelected:'Selected',combineTotal:'Combined price',combineGo:'Build combined plan',combineUnitsLbl:'Combined units',combineClear:'Clear',combineMax:'You can combine up to 4 units.',briefBuild:'Build Payment Plan',
+    balloonPayments:'Balloon Payments',balloonNone:'No balloon payments. Tap + to add one.',balloonMax:'Up to 12 balloon payments.',finderEnter:'Enter the client\u2019s payment ability above to see matching units.',
     plansHint:'All floor plans in one place — tap any plan to enlarge.',tapZoom:'Tap to enlarge',
+    fpHint:'Hover a unit to highlight it, then tap to open its brief.',tagUnits:'Edit highlights',tagDone:'Done',tagHint:'Pick a unit, then drag a box over it on the plan. Saves instantly. Drag again to refine.',tagPick:'Pick a unit, then drag its box on the plan',tagClickPlan:'Drag a box over this unit',tagClear:'Remove this highlight',tagged:'highlighted',penBox:'Box',penShape:'Pen (shape)',penHint:'Pick a unit, then click point-by-point around it. Click Finish to close the shape.',penClickPts:'Click points around the unit, then Finish',penFinish:'Finish shape',penUndo:'Undo point',penCancel:'Cancel',penNeed3:'Add at least 3 points first.',
     projectName:'Seven B Mall',units:'units',printPdf:'Print / Save PDF',back:'Back',
     totalUnits:'Total Inventory',available:'Available',reserved:'Reserved',sold:'Sold',negotiation:'Under Negotiation',
     invValue:'Inventory Value',byFloor:'Breakdown by Floor',byType:'By Unit Type',
@@ -606,7 +695,7 @@ const I18N={
     ref:'Reference',date:'Date',schedule:'Payment Schedule',no:'No.',description:'Description',dueDate:'Due Date',
     paymentAmount:'Amount (EGP)',totalLabel:'Total',clientSign:'Client Signature',companySign:'For Gold City Developments',signNameDate:'Name & Date',signStamp:'Authorized Signature & Stamp',
     unitLoc:'Unit Location — Floor Plan',settingsTitle:'Settings',branding:'Branding',
-    companyName:'Company Name',mallName:'Mall / Project Name',changePass:'Admin Passcode',userPass:'Sales User Passcode',
+    companyName:'Company Name',mallName:'Mall / Project Name',changePass:'User Accounts',userPass:'',accountsNote:'Accounts are managed in Supabase. Each salesperson signs in with their own email and password. Roles (admin/sales) are set per user.',
     defConsultant:'Default Sales Consultant',saveSettings:'Save Settings',replaceGC:'Replace Gold City logo (optional)',
     replaceMall:'Replace Seven B logo (optional)',updateAvail:'New version available — tap to update',saved:'Saved',imported:'Data imported',exported:'Data exported',
     flagNote:'Review needed: Ground-floor codes 24 & 29 are absent from the price sheet (30 units, not 32). Also, a brochure rendering is branded "I\'M LIFE Outlet Mall" while the cover/contact use "Seven B" — confirm the correct project name in Settings.',
@@ -618,15 +707,24 @@ const I18N={
     maintenance:'Maintenance',maintenancePctL:'Maintenance',maintenanceDate:'Maintenance Date',
     pricePerMInt:'Price / m² (Indoor)',pricePerMExt:'Price / m² (Outdoor)',
     unitTotal:'Unit Total',grandTotal:'Grand Total (incl. Maintenance)',yearEnd:'Year-End Settlement',
-    separateNote:'separate, not included in unit price'},
+    separateNote:'separate, not included in unit price',
+    navSaved:'Saved Plans',shareBtn:'Share',shareSaved:'Plan shared & saved',shareErr:'Could not save plan (offline?)',
+    sharedBy:'Shared by',sharedEmpty:'No shared plans yet',sharedErr:'Could not load plans',copied:'Copied to clipboard',loadingPlans:'Loading…'},
   ar:{brandName:'جولد سيتي',brandSub:'للتطوير العقاري',tagline:'نبني... لا نَعِد.',mallCap:'سيفن بي · الشروق',
-    passcode:'رمز الدخول',enter:'دخول المنصة',export:'تصدير',import:'استيراد',
+    passcode:'كلمة المرور',emailLbl:'البريد الإلكتروني',enter:'دخول المنصة',export:'تصدير',import:'استيراد',
     navDash:'الرئيسية',navInv:'الوحدات',navBoard:'الإتاحة',navSet:'الإعدادات',
     navFinder:'مطابقة الميزانية',navPlans:'المخططات',
     finderHint:'أدخل ما يستطيع العميل دفعه. نقوم بجمعه على مدة السداد ونعرض الوحدات المتاحة بسعر ضمن ±٥٪.',
     finderDp:'المقدم (ج.م)',finderInst:'القسط الذي يستطيع دفعه',finderYearly:'دفعة سنوية (اختياري)',finderYears:'مدة السداد (سنوات)',
     finderCapacity:'إجمالي قدرة العميل',finderFit:'المطابقة مقابل السعر',finderNone:'لا توجد وحدة متاحة تطابق ضمن ٥٪. جرّب تعديل المدخلات.',finderEnter:'أدخل قدرة العميل على السداد بالأعلى لعرض الوحدات المطابقة.',
+    cashLbl:'كاش',installmentsLbl:'تقسيط',
+    cashDiscLbl:'خصم الكاش (%)',cashDiscHint:'يُطبَّق فقط عند اختيار الكاش. سعر القائمة ناقص هذه النسبة.',
+    finderCashBox:'المبلغ الكامل الذي يستطيع العميل دفعه كاش',finderCashHint:'سعر الكاش = سعر القائمة ناقص خصم الكاش. نعرض الوحدات المتاحة ضمن ±٥٪ من هذا المبلغ.',finderCashFit:'المطابقة مقابل سعر الكاش',
+    payCash:'كاش',cashFullPay:'دفعة كاش كاملة بدون أقساط',cashPriceLbl:'سعر الكاش',cashSavingLbl:'خصم الكاش',
+    combineBtn:'دمج وحدات',combineTitle:'دمج وحدات في خطة واحدة',combineHint:'اختر حتى ٤ وحدات متاحة. تُجمع أسعارها في خطة واحدة.',combineSelected:'المحدد',combineTotal:'السعر المجمّع',combineGo:'إنشاء خطة مجمّعة',combineUnitsLbl:'الوحدات المجمّعة',combineClear:'مسح',combineMax:'يمكنك دمج حتى ٤ وحدات.',briefBuild:'إنشاء خطة سداد',
+    balloonPayments:'الدفعات الأخيرة',balloonNone:'لا توجد دفعات أخيرة. اضغط + للإضافة.',balloonMax:'حتى ١٢ دفعة أخيرة.',
     plansHint:'كل المخططات في مكان واحد — اضغط على أي مخطط لتكبيره.',tapZoom:'اضغط للتكبير',
+    fpHint:'مرّر المؤشر على وحدة لإبرازها، ثم اضغط لفتح بطاقتها.',tagUnits:'تعديل التحديد',tagDone:'تم',tagHint:'اختر وحدة ثم ارسم مربعًا فوقها على المخطط. يُحفظ فورًا. ارسم مجددًا للضبط.',tagPick:'اختر وحدة ثم ارسم مربعها على المخطط',tagClickPlan:'ارسم مربعًا فوق هذه الوحدة',tagClear:'إزالة التحديد',tagged:'محددة',penBox:'مربع',penShape:'قلم (شكل)',penHint:'اختر وحدة ثم اضغط نقطة بنقطة حولها. اضغط إنهاء لإغلاق الشكل.',penClickPts:'اضغط نقاطًا حول الوحدة ثم إنهاء',penFinish:'إنهاء الشكل',penUndo:'تراجع نقطة',penCancel:'إلغاء',penNeed3:'أضف 3 نقاط على الأقل.',
     projectName:'مول سيفن بي',units:'وحدة',printPdf:'طباعة / حفظ PDF',back:'رجوع',
     totalUnits:'إجمالي الوحدات',available:'متاحة',reserved:'محجوزة',sold:'مباعة',negotiation:'قيد التفاوض',
     invValue:'قيمة المخزون',byFloor:'التوزيع حسب الدور',byType:'حسب نوع الوحدة',
@@ -645,7 +743,7 @@ const I18N={
     ref:'المرجع',date:'التاريخ',schedule:'جدول السداد',no:'#',description:'البيان',dueDate:'تاريخ الاستحقاق',
     paymentAmount:'القيمة (ج.م)',totalLabel:'الإجمالي',clientSign:'توقيع العميل',companySign:'عن جولد سيتي للتطوير',signNameDate:'الاسم والتاريخ',signStamp:'التوقيع المعتمد والختم',
     unitLoc:'موقع الوحدة — مخطط الدور',settingsTitle:'الإعدادات',branding:'الهوية',
-    companyName:'اسم الشركة',mallName:'اسم المول / المشروع',changePass:'رمز المدير',userPass:'رمز مستخدم المبيعات',
+    companyName:'اسم الشركة',mallName:'اسم المول / المشروع',changePass:'حسابات المستخدمين',userPass:'',accountsNote:'تُدار الحسابات في Supabase. يدخل كل موظف ببريده وكلمة مروره. تُحدّد الصلاحية (مدير/مبيعات) لكل مستخدم.',
     defConsultant:'مستشار المبيعات الافتراضي',saveSettings:'حفظ الإعدادات',replaceGC:'استبدال شعار جولد سيتي (اختياري)',
     replaceMall:'استبدال شعار سيفن بي (اختياري)',updateAvail:'يوجد إصدار جديد — اضغط للتحديث',saved:'تم الحفظ',imported:'تم استيراد البيانات',exported:'تم تصدير البيانات',
     flagNote:'مراجعة مطلوبة: كودا الأرضي 24 و29 غير موجودين في قائمة الأسعار (30 وحدة وليست 32). كما يظهر في أحد رندرات البروشور اسم "I\'M LIFE Outlet Mall" بينما الغلاف وبيانات التواصل تستخدم "سيفن بي" — برجاء تأكيد اسم المشروع من الإعدادات.',
@@ -657,7 +755,9 @@ const I18N={
     maintenance:'وديعة الصيانة',maintenancePctL:'الصيانة',maintenanceDate:'تاريخ الصيانة',
     pricePerMInt:'سعر المتر (داخلي)',pricePerMExt:'سعر المتر (خارجي)',
     unitTotal:'إجمالي الوحدة',grandTotal:'الإجمالي شامل الصيانة',yearEnd:'تسوية نهاية العام',
-    separateNote:'منفصلة، غير مشمولة في سعر الوحدة'}
+    separateNote:'منفصلة، غير مشمولة في سعر الوحدة',
+    navSaved:'الخطط المحفوظة',shareBtn:'مشاركة',shareSaved:'تم حفظ ومشاركة الخطة',shareErr:'تعذّر حفظ الخطة (غير متصل؟)',
+    sharedBy:'بواسطة',sharedEmpty:'لا توجد خطط محفوظة بعد',sharedErr:'تعذّر تحميل الخطط',copied:'تم النسخ',loadingPlans:'جارٍ التحميل…'}
 };
 let LANG='en';
 function t(k){return (I18N[LANG]&&I18N[LANG][k])||k;}
@@ -666,11 +766,65 @@ function t(k){return (I18N[LANG]&&I18N[LANG][k])||k;}
 const LS_KEY='goldcity_sevenb_state_v6';
 const SB_URL='https://mjkhkmqopvwsgagykzze.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qa2hrbXFvcHZ3c2dhZ3lrenplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzcyNTEsImV4cCI6MjA5NjYxMzI1MX0.6ZCTRacLhLgVUcO-Lzj5qWgKBHqtid4yJi--jPetDDQ';
-const SB_HDR=()=>({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=minimal'});
+/* ---- AUTH: session tokens (Supabase GoTrue, raw fetch, no external lib) ---- */
+const AUTH_KEY='goldcity_sevenb_auth_v1';
+let AUTH={access:null,refresh:null,user:null,expires:0};
+function authLoad(){try{const s=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');if(s&&s.access){AUTH={access:s.access,refresh:null,user:s.user,expires:s.expires||0};return true;}}catch(e){}return false;}
+// SECURITY: never persist the refresh token. Only the short-lived access token + user are stored,
+// so an XSS payload cannot lift a long-lived credential from localStorage. The refresh token lives
+// only in the in-memory AUTH.refresh for the current tab; once the access token expires after a
+// reload, the rep re-logs in. TODO: migrate to httpOnly-cookie sessions via a small backend so
+// even the access token isn't readable from JavaScript.
+function authSave(){try{localStorage.setItem(AUTH_KEY,JSON.stringify({access:AUTH.access,user:AUTH.user,expires:AUTH.expires}));}catch(e){}}
+function authClear(){AUTH={access:null,refresh:null,user:null,expires:0};try{localStorage.removeItem(AUTH_KEY);}catch(e){}}
+function bearer(){return AUTH.access||SB_KEY;} // logged-in user's token drives RLS; anon key only before login
+// All PostgREST calls now authenticate AS THE LOGGED-IN USER (apikey stays the anon key, Authorization is the user JWT)
+const SB_HDR=()=>({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+bearer(),'Prefer':'return=minimal'});
+
+// Email+password sign-in via GoTrue
+async function authLogin(email,password){
+  const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({email:email.trim(),password})});
+  const d=await r.json().catch(()=>null);
+  if(!r.ok||!d||!d.access_token){return {ok:false,msg:(d&&d.error_description)||(d&&d.msg)||'Invalid email or password'};}
+  AUTH={access:d.access_token,refresh:d.refresh_token,user:d.user,expires:Date.now()+(d.expires_in||3600)*1000};
+  authSave();return {ok:true};
+}
+// Refresh an expiring session silently (keeps reps logged in across reboots until refresh token dies)
+async function authRefresh(){
+  if(!AUTH.refresh)return false;
+  const r=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({refresh_token:AUTH.refresh})});
+  const d=await r.json().catch(()=>null);
+  if(!r.ok||!d||!d.access_token){authClear();return false;}
+  AUTH={access:d.access_token,refresh:d.refresh_token,user:d.user,expires:Date.now()+(d.expires_in||3600)*1000};
+  authSave();return true;
+}
+async function authEnsure(){ // call before protected work; refresh if within 60s of expiry
+  if(!AUTH.access)return false;
+  if(Date.now()>AUTH.expires-60000){return await authRefresh();}
+  return true;
+}
+// Read this user's role from profiles (server-enforced; not a JS passcode)
+async function fetchMyRole(){
+  if(!AUTH.user)return 'sales';
+  try{const r=await fetch(SB_URL+'/rest/v1/profiles?select=role,full_name&id=eq.'+AUTH.user.id,
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+bearer()}});
+    const d=await r.json().catch(()=>null);
+    if(Array.isArray(d)&&d[0]){AUTH.user._name=d[0].full_name||AUTH.user.email;return d[0].role==='admin'?'admin':'sales';}}
+  catch(e){}
+  return 'sales';
+}
+async function authLogout(){
+  try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+bearer()}});}catch(e){}
+  authClear();
+}
 
 let STATE=null;
 function defaultState(){return {units:JSON.parse(JSON.stringify(SEED_UNITS)),
-  settings:{passcode:'goldcity',userPasscode:'user',companyName:'GOLD CITY',mallName:'Seven B Mall',consultant:'',
+  settings:{companyName:'GOLD CITY',mallName:'Seven B Mall',consultant:'',cashDiscountPct:25,
     gcLogo:ASSETS.gc_logo,mallLogo:ASSETS.sevenb_logo}};}
 
 // localStorage fast cache
@@ -679,7 +833,10 @@ function lsLoad(){try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.pars
 
 // Supabase helpers
 async function sbFetch(path,opts={}){
-  try{const r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}});
+  try{
+    await authEnsure();
+    let r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}});
+    if(r.status===401){ if(await authRefresh()){ r=await fetch(SB_URL+path,{...opts,headers:{...SB_HDR(),...(opts.headers||{})}}); } }
     if(!r.ok)return null; const txt=await r.text(); return txt?JSON.parse(txt):null;}
   catch(e){return null;}}
 
@@ -692,20 +849,19 @@ async function sbPull(){
     rows.forEach(r=>{const u=STATE.units.find(x=>x.id===r.id||x.code===r.code);if(u){
       if(r.price!=null)u.price=r.price; if(r.status)u.status=r.status;
       if(r.notes!=null)u.notes=r.notes; if(r.customer!=null)u.customer=r.customer;
-      if(r.mark!=null)u.mark=r.mark; if(r.plan!=null){u.plan=r.plan; if(r.plan._use!==undefined)u.use=r.plan._use; if(r.plan._pm!==undefined)u.pm=r.plan._pm; if(r.plan._pmExt!==undefined)u.pmExt=r.plan._pmExt;}}});}
+      if(r.mark!=null)u.mark=r.mark; if(r.plan!=null){u.plan=r.plan; if(r.plan._use!==undefined)u.use=r.plan._use; if(r.plan._pm!==undefined)u.pm=r.plan._pm; if(r.plan._pmExt!==undefined)u.pmExt=r.plan._pmExt; if(r.plan._areaInt!==undefined)u.areaInt=r.plan._areaInt; if(r.plan._areaExt!==undefined)u.areaExt=r.plan._areaExt; if(r.plan._area!==undefined)u.area=r.plan._area;}}});}
   if(sets&&sets[0]){const s=sets[0];
-    if(s.passcode)STATE.settings.passcode=s.passcode;
-    if(s.user_passcode)STATE.settings.userPasscode=s.user_passcode;
     if(s.company_name)STATE.settings.companyName=s.company_name;
     if(s.mall_name)STATE.settings.mallName=s.mall_name;
     if(s.consultant!=null)STATE.settings.consultant=s.consultant;
+    if(s.cash_discount_pct!=null)STATE.settings.cashDiscountPct=Number(s.cash_discount_pct);
     if(s.gc_logo)STATE.settings.gcLogo=s.gc_logo;
     if(s.mall_logo)STATE.settings.mallLogo=s.mall_logo;}
   lsSave();}
 
 // Push one unit to Supabase (use is carried inside the plan jsonb to avoid a schema change)
 async function sbPushUnit(u){
-  const planOut=u.plan?{...u.plan,_use:(u.use||''),_pm:u.pm,_pmExt:(u.pmExt||0)}:(u.use?{_use:u.use,_pm:u.pm,_pmExt:(u.pmExt||0)}:null);
+  const planOut=u.plan?{...u.plan,_use:(u.use||''),_pm:u.pm,_pmExt:(u.pmExt||0),_areaInt:u.areaInt,_areaExt:(u.areaExt||0),_area:u.area}:(u.use?{_use:u.use,_pm:u.pm,_pmExt:(u.pmExt||0)}:null);
   await sbFetch('/rest/v1/units',{method:'POST',
     headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({id:u.id,code:u.code,price:u.price,status:u.status,
@@ -717,14 +873,15 @@ async function sbPushSettings(){
   const s=STATE.settings;
   await sbFetch('/rest/v1/settings',{method:'POST',
     headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
-    body:JSON.stringify({id:1,passcode:s.passcode,user_passcode:s.userPasscode,
+    body:JSON.stringify({id:1,
       company_name:s.companyName,mall_name:s.mallName,consultant:s.consultant||'',
+      cash_discount_pct:(s.cashDiscountPct!=null?s.cashDiscountPct:25),
       gc_logo:s.gcLogo&&s.gcLogo.length<500000?s.gcLogo:undefined,
       mall_logo:s.mallLogo&&s.mallLogo.length<500000?s.mallLogo:undefined,
       updated_at:new Date().toISOString()})});}
 
 // saveState: write locally + push to Supabase
-function saveState(unit){lsSave();if(unit)sbPushUnit(unit);else{STATE.units.forEach(u=>sbPushUnit(u));}}
+function saveState(unit){if(unit&&unit._combo)return;lsSave();if(unit)sbPushUnit(unit);else{STATE.units.forEach(u=>sbPushUnit(u));}}
 function persistSettings(){lsSave();sbPushSettings();}
 
 // loadState: use cache first, then pull from Supabase
@@ -758,13 +915,14 @@ const FLOOR_ORDER={B:0,F0:1,F1:2,F2:3,F3:4};
 const STATUS_KEY={available:'available',reserved:'reserved',sold:'sold',negotiation:'negotiation'};
 function money(n){return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(Math.round(n));}
 function money2(n){return new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);}
-function fmtDate(d){const x=new Date(d);const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return x.getDate()+' '+m[x.getMonth()]+' '+x.getFullYear();}
-function planRowLabel(r){return r.type==='dp'?t('downPayment'):r.type==='balloon'?t('balloon'):r.type==='yearend'?t('yearEnd'):r.type==='delivery'?t('dueDelivery'):r.type==='maintenance'?t('maintenance'):t('installments')+' '+r.n;}
+function fmtDate(d){const x=parseDate(d);const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return x.getDate()+' '+m[x.getMonth()]+' '+x.getFullYear();}
+function planRowLabel(r){return r.type==='dp'?t('downPayment'):r.type==='cashfull'?t('cashFullPay'):r.type==='balloon'?t('balloon'):r.type==='yearend'?t('yearEnd'):r.type==='delivery'?t('dueDelivery'):r.type==='maintenance'?t('maintenance'):t('installments')+' '+r.n;}
 function mallLogoSrc(){return STATE.settings.mallLogo?('data:image/png;base64,'+STATE.settings.mallLogo):'';}
 function gcLogoSrc(){return STATE.settings.gcLogo?('data:image/png;base64,'+STATE.settings.gcLogo):'';}
 function planImgSrc(floor){return ASSETS['plan_'+floor]?('data:image/jpeg;base64,'+ASSETS['plan_'+floor]):'';}
 function hasPlan(floor){return !!ASSETS['plan_'+floor];}
-function codeLabel(u){return u.code+(u.use?` (${u.use})`:'');}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function codeLabel(u){return esc(u.code)+(u.use?` (${esc(u.use)})`:'');}
 const PLAN_IMG={};
 function preloadPlans(){['B','F0','F1','F2','F3'].forEach(f=>{if(!hasPlan(f))return;const im=new Image();im.src=planImgSrc(f);PLAN_IMG[f]=im;});}
 function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
@@ -776,6 +934,23 @@ function highlightedPlanSrc(u){
   try{
     const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
     const ctx=cv.getContext('2d');ctx.drawImage(im,0,0);
+    if(u.mark.poly&&u.mark.poly.length>=3){
+      const P=u.mark.poly.map(p=>[p.x/100*cv.width,p.y/100*cv.height]);
+      ctx.lineJoin='round';
+      const trace=()=>{ctx.beginPath();P.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();};
+      ctx.strokeStyle='rgba(197,161,75,0.30)';ctx.lineWidth=Math.max(cv.width*0.02,14);trace();ctx.stroke();
+      ctx.fillStyle='rgba(197,161,75,0.28)';trace();ctx.fill();
+      ctx.strokeStyle='#C5A14B';ctx.lineWidth=Math.max(cv.width*0.0055,6);trace();ctx.stroke();
+      const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);
+      const pbx=Math.min(...xs),pby=Math.min(...ys),pbw=Math.max(...xs)-pbx,pcx=pbx+pbw/2;
+      const fs=Math.max(cv.width*0.017,22);
+      ctx.font='700 '+fs+'px Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      const label=u.code, tw=ctx.measureText(label).width, padx=fs*0.55;
+      let ty=pby-fs*0.95; if(ty<fs*1.3) ty=Math.max(...ys)+fs*1.0;
+      ctx.fillStyle='#C5A14B';rr(ctx,pcx-tw/2-padx,ty-fs*0.78,tw+padx*2,fs*1.56,7);ctx.fill();
+      ctx.fillStyle='#1a1410';ctx.fillText(label,pcx,ty);
+      return cv.toDataURL('image/jpeg',0.85);
+    }
     let bx,by,bw,bh;
     if(u.mark.x1!==undefined){
       const X0=u.mark.x0/100*cv.width,Y0=u.mark.y0/100*cv.height,X1=u.mark.x1/100*cv.width,Y1=u.mark.y1/100*cv.height;
@@ -810,25 +985,55 @@ function applyHighlight(imgEl,u){
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);}
 
 /* ---------------- AUTH ---------------- */
-let ROLE='admin';
-function doLogin(){
-  const v=document.getElementById('pw').value;
-  const s=STATE.settings;
-  if(v===s.passcode){ROLE='admin';}
-  else if(s.userPasscode && v===s.userPasscode){ROLE='user';}
-  else {document.getElementById('loginErr').textContent=LANG==='ar'?'رمز غير صحيح':'Incorrect passcode';return;}
+let ROLE='sales';
+async function doLogin(){
+  const btn=document.getElementById('loginBtn');
+  const email=document.getElementById('loginEmail').value;
+  const pw=document.getElementById('pw').value;
+  const errEl=document.getElementById('loginErr');
+  if(!email||!pw){errEl.textContent=LANG==='ar'?'أدخل البريد وكلمة المرور':'Enter email and password';return;}
+  errEl.textContent=LANG==='ar'?'جارٍ الدخول…':'Signing in…';
+  if(btn)btn.disabled=true;
+  const res=await authLogin(email,pw);
+  if(!res.ok){errEl.textContent=LANG==='ar'?'بريد أو كلمة مرور غير صحيحة':'Incorrect email or password';if(btn)btn.disabled=false;return;}
+  ROLE=await fetchMyRole();
+  authSave();
+  errEl.textContent='';
+  if(btn)btn.disabled=false;
+  enterApp();
+}
+function enterApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='grid';
   applyRole();
   nav('dashboard');
+  // pull fresh data AS the logged-in user (boot pull ran before login), then refresh view
+  sbPull().then(()=>nav(CURRENT||'dashboard'));
+}
+// Restore a saved session on load so reps log in once per device, not every visit
+async function restoreSession(){
+  if(!authLoad())return false;
+  if(!(await authEnsure())){authClear();return false;}
+  ROLE=await fetchMyRole();
+  authSave();
+  return true;
 }
 function applyRole(){
-  document.body.classList.toggle('role-user', ROLE==='user');
-  const badge=document.getElementById('roleBadge'); if(badge) badge.textContent = ROLE==='admin' ? t('roleAdmin') : t('roleUser');
-  // hide admin-only controls for users
-  document.querySelectorAll('.admin-only').forEach(el=>{el.style.display = ROLE==='user' ? 'none' : '';});
+  const isSales = ROLE!=='admin';
+  document.body.classList.toggle('role-user', isSales);
+  const badge=document.getElementById('roleBadge');
+  if(badge) badge.textContent = isSales ? t('roleUser') : t('roleAdmin');
+  document.querySelectorAll('.admin-only').forEach(el=>{el.style.display = isSales ? 'none' : '';});
 }
-function logout(){document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('pw').value='';document.getElementById('loginErr').textContent='';ROLE='admin';}
+async function logout(){
+  await authLogout();
+  ROLE='sales';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  const pw=document.getElementById('pw'); if(pw)pw.value='';
+  const em=document.getElementById('loginEmail'); if(em)em.value='';
+  const er=document.getElementById('loginErr'); if(er)er.textContent='';
+}
 
 /* ---------------- LANG ---------------- */
 function applyI18n(){
@@ -850,6 +1055,7 @@ function nav(view){
   else if(view==='board')renderBoard();
   else if(view==='finder')renderFinder();
   else if(view==='plans')renderPlans();
+  else if(view==='shared')renderShared();
   else if(view==='settings')renderSettings();
 }
 
@@ -890,7 +1096,8 @@ function renderDashboard(){
 let FILTERS={q:'',floor:'',type:'',status:''};
 function renderInventory(){
   document.getElementById('main').innerHTML=`
-    <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navInv')}</h2></div></div>
+    <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navInv')}</h2></div>
+      <button class="btn btn-line" style="align-self:center" onclick="openCombine()">${t('combineBtn')}</button></div>
     <div class="filterbar">
       <input class="search" id="fSearch" placeholder="${t('search')}" oninput="FILTERS.q=this.value;applyFilters()">
       <select id="fFloor" onchange="FILTERS.floor=this.value;applyFilters()">
@@ -950,18 +1157,28 @@ function renderBoard(){
       return `<div class="board-floor"><h3>${t(FLOOR_KEY[f])}</h3>
         <div class="meta">${fu.length} ${t('units')} · ${fu.filter(u=>u.status==='available').length} ${t('available')}</div>
         <div class="unit-grid">${fu.map(u=>`<button class="unit-chip" onclick="openUnit(${u.id})">
+          <span class="chip-info" onclick="event.stopPropagation();openBrief(${u.id})" aria-label="${t('unitDetail')}">i</span>
           <span class="dot ${u.status}"></span>
           <div class="uc">${codeLabel(u)}</div><div class="ua">${u.area} m² · ${t(u.type)}</div>
           <div class="up">EGP ${money(u.price)}</div></button>`).join('')}</div></div>`;}).join('')}`;
 }
 
 /* ---------------- BUDGET FINDER ---------------- */
-let FINDER={dp:0,inst:0,freq:'monthly',yearly:0,years:6};
+let FINDER={mode:'installments',cashAmount:0,dp:0,inst:0,freq:'monthly',yearly:0,years:6};
+function setFinderMode(m){FINDER.mode=m;renderFinder();}
 function renderFinder(){
+  const cash=FINDER.mode==='cash';
   document.getElementById('main').innerHTML=`
     <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navFinder')}</h2></div></div>
-    <div class="flag-note" style="border-color:rgba(197,161,75,.3)"><span>⊜</span><span>${t('finderHint')}</span></div>
+    <div class="flag-note" style="border-color:rgba(197,161,75,.3)"><span>⊜</span><span>${cash?t('finderCashHint'):t('finderHint')}</span></div>
     <div class="finder-form">
+      <div class="seg" style="margin-bottom:14px">
+        <button class="${!cash?'on':''}" onclick="setFinderMode('installments')">${t('installmentsLbl')}</button>
+        <button class="${cash?'on':''}" onclick="setFinderMode('cash')">${t('cashLbl')}</button>
+      </div>
+      ${cash?`
+      <div class="field"><label>${t('finderCashBox')}</label><input type="number" id="fnCash" value="${FINDER.cashAmount||''}" placeholder="0" oninput="runFinder()"></div>
+      `:`
       <div class="field-row">
         <div class="field"><label>${t('finderDp')}</label><input type="number" id="fnDp" value="${FINDER.dp||''}" placeholder="0" oninput="runFinder()"></div>
         <div class="field"><label>${t('finderYears')}</label><input type="number" id="fnYears" value="${FINDER.years}" oninput="runFinder()"></div>
@@ -974,15 +1191,36 @@ function renderFinder(){
           <option value="semi" ${FINDER.freq==='semi'?'selected':''}>${t('semi')}</option></select></div>
       </div>
       <div class="field"><label>${t('finderYearly')}</label><input type="number" id="fnYearly" value="${FINDER.yearly||''}" placeholder="0" oninput="runFinder()"></div>
+      `}
     </div>
     <div class="finder-cap" id="fnCap"></div>
     <div class="table-wrap" style="margin-top:14px"><table><thead><tr>
-      <th>${t('code')}</th><th>${t('floor')}</th><th>${t('price')}</th><th>${t('finderFit')}</th></tr></thead>
+      <th>${t('code')}</th><th>${t('floor')}</th><th>${cash?t('cashPriceLbl'):t('price')}</th><th>${cash?t('finderCashFit'):t('finderFit')}</th></tr></thead>
       <tbody id="fnBody"></tbody></table></div>`;
   runFinder();
 }
 function runFinder(){
   const g=id=>document.getElementById(id);
+  const body=g('fnBody');
+  if(FINDER.mode==='cash'){
+    FINDER.cashAmount=Number(g('fnCash').value)||0;
+    const amt=FINDER.cashAmount;
+    g('fnCap').innerHTML=`<div class="cap-lab">${t('finderCashBox')}</div><div class="cap-val">EGP ${money(amt)}</div>
+      <div class="cap-sub">${t('cashDiscLbl')}: ${cashPct()}%</div>`;
+    if(amt<=0){body.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">${t('finderEnter')}</td></tr>`;return;}
+    const matches=STATE.units.filter(u=>u.status==='available').map(u=>{
+      const cp=cashPrice(u.price);const diff=cp?(amt-cp)/cp*100:0;
+      return {u,cp,diff};
+    }).filter(m=>Math.abs(m.diff)<=5).sort((a,b)=>Math.abs(a.diff)-Math.abs(b.diff));
+    if(!matches.length){body.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">${t('finderNone')}</td></tr>`;return;}
+    body.innerHTML=matches.map(({u,cp,diff})=>{
+      const sign=diff>=0?'+':'';const cls=Math.abs(diff)<=2?'b-available':'b-negotiation';
+      return `<tr style="cursor:pointer" onclick="openUnit(${u.id})">
+        <td class="col-code">${codeLabel(u)}</td><td>${t(FLOOR_KEY[u.floor])}</td>
+        <td class="price">EGP ${money(cp)}</td>
+        <td><span class="badge ${cls}">${sign}${diff.toFixed(1)}%</span></td></tr>`;}).join('');
+    return;
+  }
   FINDER.dp=Number(g('fnDp').value)||0;
   FINDER.inst=Number(g('fnInst').value)||0;
   FINDER.freq=g('fnFreq').value;
@@ -992,7 +1230,6 @@ function runFinder(){
   const capacity=FINDER.dp + FINDER.inst*per*FINDER.years + FINDER.yearly*FINDER.years;
   g('fnCap').innerHTML=`<div class="cap-lab">${t('finderCapacity')}</div><div class="cap-val">EGP ${money(capacity)}</div>
     <div class="cap-sub">${t('finderDp')}: EGP ${money(FINDER.dp)} · ${FINDER.inst?money(FINDER.inst)+' × '+(per*FINDER.years)+' '+t(FINDER.freq):''}${FINDER.yearly?' · '+money(FINDER.yearly)+'/yr × '+FINDER.years:''}</div>`;
-  const body=g('fnBody');
   if(capacity<=0){body.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">${t('finderEnter')}</td></tr>`;return;}
   const matches=STATE.units.filter(u=>u.status==='available').map(u=>{
     const diff=(capacity-u.price)/u.price*100; // + means client can afford above price
@@ -1008,7 +1245,121 @@ function runFinder(){
 }
 
 /* ---------------- FLOOR PLANS GALLERY ---------------- */
+let FP_FLOOR=null, FP_TAG=null, FP_TAGMODE=false;
 function renderPlans(){
+  const floors=['B','F0','F1','F2','F3'].filter(hasPlan);
+  if(!floors.length){document.getElementById('main').innerHTML=`<div class="page-head"><div><h2>${t('navPlans')}</h2></div></div><div class="flag-note"><span>▤</span><span>${t('finderNone')}</span></div>`;return;}
+  if(!FP_FLOOR||!floors.includes(FP_FLOOR))FP_FLOOR=floors.includes('F0')?'F0':floors[0];
+  if(ROLE!=='admin'){FP_TAGMODE=false;}
+  const f=FP_FLOOR;
+  const units=STATE.units.filter(u=>u.floor===f);
+  const tagged=units.filter(u=>u.mark);
+  const isAdmin=ROLE==='admin';
+  const hotspots=tagged.map(u=>{const m=u.mark;const sel=FP_TAG===u.id?' sel':'';
+    if(m.poly&&m.poly.length>=3){const xs=m.poly.map(p=>p.x),ys=m.poly.map(p=>p.y);
+      const L=Math.min(...xs),T=Math.min(...ys),W=Math.max(...xs)-L||0.1,H=Math.max(...ys)-T||0.1;
+      const clip=m.poly.map(p=>`${((p.x-L)/W*100).toFixed(1)}% ${((p.y-T)/H*100).toFixed(1)}%`).join(',');
+      return `<button class="fp-hot fp-poly${sel}" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%;clip-path:polygon(${clip});-webkit-clip-path:polygon(${clip})" ${FP_TAGMODE?'tabindex="-1"':`onclick="openBrief(${u.id})"`} aria-label="${esc(u.code)}"></button>`;}
+    if(m.x1!==undefined){const L=Math.min(m.x0,m.x1),T=Math.min(m.y0,m.y1),W=Math.abs(m.x1-m.x0),H=Math.abs(m.y1-m.y0);
+      return `<button class="fp-hot fp-box${sel}" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%" ${FP_TAGMODE?'tabindex="-1"':`onclick="openBrief(${u.id})"`} aria-label="${esc(u.code)}"><span class="fp-pin">${esc(u.code)}</span></button>`;}
+    return `<button class="fp-hot${sel}" style="left:${m.x}%;top:${m.y}%" ${FP_TAGMODE?'tabindex="-1"':`onclick="openBrief(${u.id})"`} aria-label="${esc(u.code)}"><span class="fp-glow"></span><span class="fp-pin">${esc(u.code)}</span></button>`;
+  }).join('');
+  const penActive=FP_TAGMODE&&FP_TAG!=null&&FP_PEN;
+  const wrapHandler=FP_TAGMODE&&FP_TAG!=null?(FP_PEN?'onclick="fpPenClick(event)"':'onmousedown="fpDown(event)"'):'';
+  document.getElementById('main').innerHTML=`
+    <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navPlans')}</h2></div>
+      ${isAdmin?`<button class="btn ${FP_TAGMODE?'btn-primary':'btn-line'}" style="align-self:center" onclick="toggleTagMode()">${FP_TAGMODE?t('tagDone'):t('tagUnits')}</button>`:''}</div>
+    <div class="flag-note" style="border-color:rgba(197,161,75,.3)"><span>▤</span><span>${FP_TAGMODE?(FP_PEN?t('penHint'):t('tagHint')):t('fpHint')}</span></div>
+    <div class="fp-tabs">${floors.map(ff=>`<button class="fp-tab ${ff===f?'on':''}" onclick="setFpFloor('${ff}')">${t(FLOOR_KEY[ff])}</button>`).join('')}</div>
+    ${FP_TAGMODE?`<div class="fp-modebar">
+      <button class="fp-mode ${!FP_PEN?'on':''}" onclick="fpSetPen(false)">▭ ${t('penBox')}</button>
+      <button class="fp-mode ${FP_PEN?'on':''}" onclick="fpSetPen(true)">✐ ${t('penShape')}</button>
+      ${penActive?`<span class="fp-pen-tools"><button class="btn btn-primary" onclick="fpPenFinish()">${t('penFinish')}</button>
+        <button class="btn btn-ghost" onclick="fpPenUndo()">${t('penUndo')}</button>
+        <button class="btn btn-ghost" onclick="fpPenCancel()">${t('penCancel')}</button></span>`:''}
+    </div>`:''}
+    <div class="fp-stage">
+      <div class="fp-wrap ${FP_TAGMODE?'tagging':''} ${penActive?'penning':''}" id="fpWrap" ${wrapHandler}>
+        <img src="${planImgSrc(f)}" alt="plan" draggable="false">
+        ${hotspots}
+        <div class="fp-dragrect" id="fpDragRect"></div>
+        ${penActive?`<svg id="fpPenSvg" class="fp-pensvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>`:''}
+        ${FP_TAGMODE&&FP_TAG!=null?`<div class="fp-tagcursor">${FP_PEN?t('penClickPts'):t('tagClickPlan')}</div>`:''}
+      </div>
+    </div>
+    ${FP_TAGMODE?`<div class="fp-taglist">
+      <div class="fp-tl-head">${t('tagPick')} · ${t(FLOOR_KEY[f])} — ${tagged.length}/${units.length} ${t('tagged')}</div>
+      <div class="fp-chips">
+        ${units.slice().sort((a,b)=>String(a.code)<String(b.code)?-1:1).map(u=>`<button class="fp-chip ${u.mark?'done':''} ${FP_TAG===u.id?'active':''}" onclick="pickTag(${u.id})">${esc(u.code)}${u.mark?(u.mark.poly?' ⬡':' ✓'):''}</button>`).join('')}
+      </div>
+      ${FP_TAG!=null?`<div class="fp-tl-foot"><a href="#" onclick="clearTag(event,${FP_TAG})" style="color:var(--gold)">${t('tagClear')}</a></div>`:''}
+    </div>`:`<div class="fp-legend">${tagged.length}/${units.length} ${t('tagged')}${isAdmin&&tagged.length<units.length?` · <a href="#" onclick="toggleTagMode();return false" style="color:var(--gold)">${t('tagUnits')}</a>`:''}</div>`}`;
+  if(penActive)drawPenOverlay();
+}
+function setFpFloor(f){FP_FLOOR=f;FP_TAG=null;renderPlans();}
+function toggleTagMode(){if(ROLE!=='admin')return;FP_TAGMODE=!FP_TAGMODE;FP_TAG=null;FP_PTS=[];renderPlans();}
+function pickTag(id){FP_TAG=(FP_TAG===id?null:id);FP_PTS=[];renderPlans();}
+function clearTag(e,id){if(e)e.preventDefault();const u=STATE.units.find(z=>z.id===id);if(u){u.mark=null;saveState(u);}FP_TAG=null;renderPlans();}
+let FP_DRAG=null;
+let FP_PEN=false, FP_PTS=[];
+function fpSetPen(on){FP_PEN=!!on;FP_PTS=[];renderPlans();}
+function fpPenClick(e){
+  if(!FP_TAGMODE||FP_TAG==null||!FP_PEN)return;
+  const wrap=document.getElementById('fpWrap');if(!wrap)return;const img=wrap.querySelector('img');
+  const r=img.getBoundingClientRect();
+  const x=+Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)).toFixed(2);
+  const y=+Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100)).toFixed(2);
+  FP_PTS.push({x,y});drawPenOverlay();
+}
+function fpPenUndo(){FP_PTS.pop();drawPenOverlay();}
+function fpPenCancel(){FP_PTS=[];drawPenOverlay();}
+function fpPenFinish(){
+  if(FP_PTS.length<3){toast(t('penNeed3'));return;}
+  const u=STATE.units.find(z=>z.id===FP_TAG);if(!u)return;
+  const xs=FP_PTS.map(p=>p.x),ys=FP_PTS.map(p=>p.y);
+  const x0=Math.min(...xs),y0=Math.min(...ys),x1=Math.max(...xs),y1=Math.max(...ys);
+  u.mark={poly:FP_PTS.slice(),x:+((x0+x1)/2).toFixed(2),y:+((y0+y1)/2).toFixed(2),x0:+x0.toFixed(2),y0:+y0.toFixed(2),x1:+x1.toFixed(2),y1:+y1.toFixed(2)};
+  saveState(u);toast(t('markSet'));
+  FP_PTS=[];renderPlans();
+}
+function drawPenOverlay(){
+  const svg=document.getElementById('fpPenSvg');if(!svg)return;
+  const pts=FP_PTS.map(p=>p.x+','+p.y).join(' ');
+  svg.innerHTML=`${FP_PTS.length>1?`<polygon points="${pts}" fill="rgba(197,161,75,0.25)" stroke="#C5A14B" stroke-width="0.35" stroke-linejoin="round"/>`:''}${FP_PTS.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===0?0.95:0.7}" fill="${i===0?'#fff':'#C5A14B'}" stroke="#C5A14B" stroke-width="0.25"/>`).join('')}`;
+}
+function fpDown(e){
+  if(!FP_TAGMODE||FP_TAG==null)return;
+  const wrap=document.getElementById('fpWrap');if(!wrap)return;const img=wrap.querySelector('img');
+  const r=img.getBoundingClientRect();
+  FP_DRAG={r,sx:(e.clientX-r.left)/r.width,sy:(e.clientY-r.top)/r.height};
+  const ov=document.getElementById('fpDragRect');
+  if(ov){ov.style.display='block';ov.style.left=(FP_DRAG.sx*100)+'%';ov.style.top=(FP_DRAG.sy*100)+'%';ov.style.width='0';ov.style.height='0';}
+  document.addEventListener('mousemove',fpMove);
+  document.addEventListener('mouseup',fpUp);
+  e.preventDefault();
+}
+function fpMove(e){
+  if(!FP_DRAG)return;const r=FP_DRAG.r;
+  const cx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),cy=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+  const x0=Math.min(FP_DRAG.sx,cx),y0=Math.min(FP_DRAG.sy,cy),x1=Math.max(FP_DRAG.sx,cx),y1=Math.max(FP_DRAG.sy,cy);
+  const ov=document.getElementById('fpDragRect');
+  if(ov){ov.style.left=(x0*100)+'%';ov.style.top=(y0*100)+'%';ov.style.width=((x1-x0)*100)+'%';ov.style.height=((y1-y0)*100)+'%';}
+}
+function fpUp(e){
+  document.removeEventListener('mousemove',fpMove);document.removeEventListener('mouseup',fpUp);
+  if(!FP_DRAG)return;const r=FP_DRAG.r;
+  const cx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),cy=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+  let x0=Math.min(FP_DRAG.sx,cx)*100,y0=Math.min(FP_DRAG.sy,cy)*100,x1=Math.max(FP_DRAG.sx,cx)*100,y1=Math.max(FP_DRAG.sy,cy)*100;
+  const ov=document.getElementById('fpDragRect');if(ov)ov.style.display='none';
+  FP_DRAG=null;
+  // Require a real drag to change the box; a stray click won't wipe an existing mark.
+  if((x1-x0)<1.2||(y1-y0)<1.2)return;
+  const u=STATE.units.find(z=>z.id===FP_TAG);if(!u)return;
+  u.mark={x:+((x0+x1)/2).toFixed(2),y:+((y0+y1)/2).toFixed(2),x0:+x0.toFixed(2),y0:+y0.toFixed(2),x1:+x1.toFixed(2),y1:+y1.toFixed(2)};
+  saveState(u);toast(t('markSet'));
+  renderPlans(); // keep the same unit selected so you can refine it
+}
+function renderPlansOLD(){
   const floors=['B','F0','F1','F2','F3'].filter(hasPlan);
   document.getElementById('main').innerHTML=`
     <div class="page-head"><div><div class="crumb">${t('projectName')}</div><h2>${t('navPlans')}</h2></div></div>
@@ -1030,12 +1381,14 @@ function zoomPlan(f){
 
 /* ---------------- UNIT DETAIL + PLAN ---------------- */
 let MODAL_UNIT=null;
+let COMBO=null;
 function openUnit(id){
-  const u=STATE.units.find(x=>x.id===id);if(!u)return;MODAL_UNIT=u;
-  if(!u.plan)u.plan={dpType:'percent',dpValue:10,freq:'monthly',years:6,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',consultant:STATE.settings.consultant||'',
-    mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'};
+  const u=id==='__combo__'?COMBO:STATE.units.find(x=>x.id===id);if(!u)return;MODAL_UNIT=u;
+  const DEF_PLAN={dpType:'percent',dpValue:25,freq:'monthly',years:4,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'};
+  u.plan=Object.assign({},DEF_PLAN,u.plan||{});
+  if(!Array.isArray(u.plan.balloons))u.plan.balloons=(Number(u.plan.balloon)>0)?[{amount:Number(u.plan.balloon),date:''}]:[];
+  delete u.plan.balloon;
   if(u.plan.discountType===undefined)u.plan.discountType=(u.plan.discount>0?'amount':'percent');
-  if(u.plan.mode===undefined){u.plan.mode='equal';u.plan.monthlyFixed=0;u.plan.maintenanceOn=true;u.plan.maintenancePct=10;u.plan.maintenanceDate='2027-01-01';u.plan.deliveryOn=true;u.plan.deliveryPct=50;u.plan.deliveryDate='2027-03-01';}
   const ov=document.createElement('div');ov.className='overlay';ov.id='unitOverlay';
   ov.onclick=(e)=>{if(e.target===ov)closeUnit();};
   ov.innerHTML=`<div class="modal"><div class="modal-head">
@@ -1044,30 +1397,32 @@ function openUnit(id){
     <div class="modal-body">
       <div class="modal-col left">
         <div class="field-row">
-          <div class="field"><label>${t('internalArea')}</label><div class="static">${u.areaInt} m²</div></div>
-          <div class="field"><label>${t('externalArea')}</label><div class="static">${u.areaExt||0} m²</div></div>
+          <div class="field"><label>${t('internalArea')}</label>
+            ${ROLE!=='admin'?`<div class="static">${u.areaInt} m²</div>`:`<input type="number" id="uAreaInt" value="${u.areaInt}" oninput="recalcAreas()">`}</div>
+          <div class="field"><label>${t('externalArea')}</label>
+            ${ROLE!=='admin'?`<div class="static">${u.areaExt||0} m²</div>`:`<input type="number" id="uAreaExt" value="${u.areaExt||0}" oninput="recalcAreas()">`}</div>
         </div>
         <div class="field-row">
-          <div class="field"><label>${t('totalArea')}</label><div class="static" style="color:var(--gold)">${u.area} m²</div></div>
+          <div class="field"><label>${t('totalArea')}</label><div class="static" style="color:var(--gold)" id="uTotalArea">${u.area} m²</div></div>
           <div class="field"><label>${u.pmExt?t('pricePerMInt'):t('pricePerM')}</label>
-            ${ROLE==='user'?`<div class="static">EGP ${money(u.pm)}</div>`:`<input type="number" id="uPm" value="${u.pm}" oninput="recalcFromPm()">`}</div>
+            ${ROLE!=='admin'?`<div class="static">EGP ${money(u.pm)}</div>`:`<input type="number" id="uPm" value="${u.pm}" oninput="recalcFromPm()">`}</div>
         </div>
         ${(u.pmExt||u.areaExt)?`<div class="field"><label>${t('pricePerMExt')}</label>
-          ${ROLE==='user'?`<div class="static">EGP ${money(u.pmExt||0)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div>`:`<input type="number" id="uPmExt" value="${u.pmExt||0}" oninput="recalcFromPm()">`}</div>`:''}
+          ${ROLE!=='admin'?`<div class="static">EGP ${money(u.pmExt||0)} <span style="color:var(--muted-2);font-size:.8rem;font-weight:400">/ m²</span></div>`:`<input type="number" id="uPmExt" value="${u.pmExt||0}" oninput="recalcFromPm()">`}</div>`:''}
         <div class="field"><label>${t('unitPrice')}</label>
-          <input type="number" id="uPrice" value="${u.price}" oninput="recalcFromPrice()" ${ROLE==='user'?'readonly':''}></div>
+          <input type="number" id="uPrice" value="${u.price}" oninput="recalcFromPrice()" ${ROLE!=='admin'?'readonly':''}></div>
         <div class="field"><label>${t('status')}</label>
-          <select id="uStatus" ${ROLE==='user'?'disabled':''}>
+          <select id="uStatus" ${ROLE!=='admin'?'disabled':''}>
             <option value="available"${u.status==='available'?' selected':''}>${t('available')}</option>
             <option value="reserved"${u.status==='reserved'?' selected':''}>${t('reserved')}</option>
             <option value="negotiation"${u.status==='negotiation'?' selected':''}>${t('negotiation')}</option>
             <option value="sold"${u.status==='sold'?' selected':''}>${t('sold')}</option></select></div>
-        <div class="field"><label>${t('notes')}</label><textarea id="uNotes" rows="2" ${ROLE==='user'?'readonly':''}>${u.notes||''}</textarea></div>
-        <div class="field"><label>${t('unitUse')}</label><input id="uUse" value="${u.use||''}" placeholder="${t('shop')}, ${t('market')}…" ${ROLE==='user'?'readonly':''}></div>
+        <div class="field"><label>${t('notes')}</label><textarea id="uNotes" rows="2" ${ROLE!=='admin'?'readonly':''}>${esc(u.notes||'')}</textarea></div>
+        <div class="field"><label>${t('unitUse')}</label><input id="uUse" value="${esc(u.use||'')}" placeholder="${t('shop')}, ${t('market')}…" ${ROLE!=='admin'?'readonly':''}></div>
         <div class="field"><label>${t('unitLoc')}</label>
           ${!hasPlan(u.floor)
             ? `<div class="plan-frame" id="planFrame" style="display:flex;align-items:center;justify-content:center;min-height:120px;color:var(--muted);font-size:.85rem">${t('noPlan')}</div>`
-            : ROLE==='user'
+            : ROLE!=='admin'
             ? `<div class="plan-frame" id="planFrame"><img class="plan-floorplan" id="planImg" src="${planImgSrc(u.floor)}" alt="plan"></div>`
             : `<div class="plan-frame clickable" id="planFrame" onmousedown="planDown(event)">
                  <img class="plan-floorplan" id="planImg" src="${planImgSrc(u.floor)}" alt="plan" draggable="false">
@@ -1078,14 +1433,16 @@ function openUnit(id){
       </div>
       <div class="modal-col right">
         <div class="field-row">
-          <div class="field"><label>${t('customer')}</label><input id="pCustomer" value="${u.plan.customer||''}"></div>
-          <div class="field"><label>${t('mobile')}</label><input id="pMobile" value="${u.plan.mobile||''}"></div>
+          <div class="field"><label>${t('customer')}</label><input id="pCustomer" value="${esc(u.plan.customer||'')}"></div>
+          <div class="field"><label>${t('mobile')}</label><input id="pMobile" value="${esc(u.plan.mobile||'')}"></div>
         </div>
-        <div class="field"><label>${t('consultant')}</label><input id="pConsultant" value="${u.plan.consultant||''}"></div>
+
         <div class="section-title" style="margin:6px 0 12px">${t('paymentPlan')}</div>
         <div class="field"><label>${t('planMode')}</label>
-          <div class="seg"><button id="segEqual" class="${u.plan.mode!=='fixed_annual'?'on':''}" onclick="setMode('equal')">${t('modeEqual')}</button>
-            <button id="segFixed" class="${u.plan.mode==='fixed_annual'?'on':''}" onclick="setMode('fixed_annual')">${t('modeFixedAnnual')}</button></div></div>
+          <div class="seg"><button id="segEqual" class="${(u.plan.mode||'equal')==='equal'?'on':''}" onclick="setMode('equal')">${t('modeEqual')}</button>
+            <button id="segFixed" class="${u.plan.mode==='fixed_annual'?'on':''}" onclick="setMode('fixed_annual')">${t('modeFixedAnnual')}</button>
+            <button id="segCash" class="${u.plan.mode==='cash'?'on':''}" onclick="setMode('cash')">${t('payCash')}</button></div></div>
+        <div id="planStructure">
         <div class="field"><label>${t('downPayment')}</label>
           <div class="field-row" style="grid-template-columns:1fr 110px">
             <input type="number" id="pDpValue" value="${u.plan.dpValue}" oninput="recalc()">
@@ -1101,7 +1458,11 @@ function openUnit(id){
           <div class="field" id="fldFixed" style="display:none"><label>${t('fixedMonthly')}</label>
             <input type="number" id="pMonthlyFixed" value="${u.plan.monthlyFixed||0}" oninput="recalc()"></div>
           <div class="field"><label>${t('duration')}</label><input type="number" id="pYears" step="0.5" value="${u.plan.years}" oninput="recalc()"></div>
-          <div class="field"><label>${t('balloon')}</label><input type="number" id="pBalloon" value="${u.plan.balloon||0}" oninput="recalc()"></div>
+        </div>
+        <div class="field">
+          <label style="display:flex;justify-content:space-between;align-items:center"><span>${t('balloonPayments')}</span>
+            <button type="button" class="btn btn-line" style="padding:2px 13px;font-size:1.15rem;line-height:1.2" onclick="addBalloon()">+</button></label>
+          <div id="balloonRows"></div>
         </div>
         <div class="field-row">
           <div class="field"><label>${t('startDate')}</label><input type="date" id="pStart" value="${u.plan.startDate}" oninput="recalc()"></div>
@@ -1117,6 +1478,7 @@ function openUnit(id){
           <div class="field"><label>${t('deliveryThreshold')} (%)</label><input type="number" id="pDeliveryPct" value="${u.plan.deliveryPct||50}" oninput="recalc()"></div>
           <div class="field"><label>${t('deliveryDate')}</label><input type="date" id="pDeliveryDate" value="${u.plan.deliveryDate||'2027-03-01'}" oninput="recalc()"></div>
         </div>
+        </div><!--/planStructure-->
         <div class="subhead"><label class="chk"><input type="checkbox" id="pMaintOn" ${u.plan.maintenanceOn?'checked':''} onchange="recalc()"> ${t('maintenance')}</label></div>
         <div class="field-row">
           <div class="field"><label>${t('maintenancePctL')} (%)</label><input type="number" id="pMaintPct" value="${u.plan.maintenancePct||10}" oninput="recalc()"></div>
@@ -1127,12 +1489,14 @@ function openUnit(id){
     </div>
     <div class="modal-foot">
       <button class="btn btn-primary" onclick="generateQuote()">${t('genQuote')}</button>
+      <button class="btn btn-line" onclick="sharePlan()">${t('shareBtn')}</button>
       <button class="btn btn-line" onclick="exportExcel()">${t('exportXls')}</button>
       <button class="btn btn-line" onclick="saveUnit()">${t('saveUnit')}</button>
       <button class="btn btn-ghost" style="margin-inline-start:auto" onclick="closeUnit()">${t('back')}</button>
     </div></div>`;
   document.body.appendChild(ov);
   recalc();
+  renderBalloons();
   applyHighlight(document.getElementById('planImg'),u);
 }
 let DP_TYPE='percent';
@@ -1143,15 +1507,28 @@ function setDiscType(ty){MODAL_UNIT.plan.discountType=ty;
   document.getElementById('segDiscPct').classList.toggle('on',ty==='percent');
   document.getElementById('segDiscAmt').classList.toggle('on',ty==='amount');recalc();}
 function effDiscount(u){const v=Number(u.plan.discount)||0;return (u.plan.discountType==='amount')?v:Math.round(u.price*v/100);}
+function cashPct(){const v=Number(STATE.settings.cashDiscountPct);return isFinite(v)?v:25;}
+function cashPrice(listPrice){return Math.round((Number(listPrice)||0)*(1-cashPct()/100));}
 function setMode(m){MODAL_UNIT.plan.mode=m;
-  document.getElementById('segEqual').classList.toggle('on',m!=='fixed_annual');
+  document.getElementById('segEqual').classList.toggle('on',m==='equal');
   document.getElementById('segFixed').classList.toggle('on',m==='fixed_annual');
+  const sc=document.getElementById('segCash');if(sc)sc.classList.toggle('on',m==='cash');
   applyModeVisibility();recalc();}
 function applyModeVisibility(){
-  const fixed=MODAL_UNIT.plan.mode==='fixed_annual';
+  const mode=MODAL_UNIT.plan.mode;
+  const cash=mode==='cash', fixed=mode==='fixed_annual';
+  const ps=document.getElementById('planStructure');if(ps)ps.style.display=cash?'none':'';
   const ff=document.getElementById('fldFreq'),fx=document.getElementById('fldFixed');
   if(ff)ff.style.display=fixed?'none':'';
   if(fx)fx.style.display=fixed?'':'none';
+}
+function recalcAreas(){const u=MODAL_UNIT;
+  const aiEl=document.getElementById('uAreaInt'),aeEl=document.getElementById('uAreaExt');
+  if(aiEl)u.areaInt=Number(aiEl.value)||0;
+  if(aeEl)u.areaExt=Number(aeEl.value)||0;
+  u.area=Math.round((u.areaInt+(u.areaExt||0))*100)/100;
+  const totEl=document.getElementById('uTotalArea');if(totEl)totEl.textContent=u.area+' m²';
+  recalcFromPrice();// price stays fixed; recompute displayed price/m² from price ÷ new total area
 }
 function recalcFromPm(){const u=MODAL_UNIT;
   const pm=Number(document.getElementById('uPm').value)||0;
@@ -1170,15 +1547,18 @@ function recalcFromPrice(){const u=MODAL_UNIT;
 function readPlanInputs(){
   const u=MODAL_UNIT;
   const pmEl=document.getElementById('uPm');if(pmEl)u.pm=Number(pmEl.value)||0;
+  const aiEl=document.getElementById('uAreaInt');if(aiEl)u.areaInt=Number(aiEl.value)||0;
+  const aeEl=document.getElementById('uAreaExt');if(aeEl)u.areaExt=Number(aeEl.value)||0;
+  if(aiEl||aeEl)u.area=Math.round((u.areaInt+(u.areaExt||0))*100)/100;
   const pmExtEl=document.getElementById('uPmExt');if(pmExtEl)u.pmExt=Number(pmExtEl.value)||0;
   u.price=Number(document.getElementById('uPrice').value)||u.price;
   u.plan.dpType=DP_TYPE=document.getElementById('segPct').classList.contains('on')?'percent':'amount';
   u.plan.dpValue=Number(document.getElementById('pDpValue').value)||0;
-  u.plan.mode=document.getElementById('segFixed').classList.contains('on')?'fixed_annual':'equal';
+  u.plan.mode=document.getElementById('segCash').classList.contains('on')?'cash':(document.getElementById('segFixed').classList.contains('on')?'fixed_annual':'equal');
   u.plan.freq=document.getElementById('pFreq').value;
   u.plan.monthlyFixed=Number(document.getElementById('pMonthlyFixed').value)||0;
   u.plan.years=Number(document.getElementById('pYears').value)||1;
-  u.plan.balloon=Number(document.getElementById('pBalloon').value)||0;
+  readBalloons();
   u.plan.startDate=document.getElementById('pStart').value;
   u.plan.discount=Number(document.getElementById('pDiscount').value)||0;
   u.plan.discountType=document.getElementById('segDiscPct').classList.contains('on')?'percent':'amount';
@@ -1190,17 +1570,37 @@ function readPlanInputs(){
   u.plan.maintenanceDate=document.getElementById('pMaintDate').value;
   u.plan.customer=document.getElementById('pCustomer').value;
   u.plan.mobile=document.getElementById('pMobile').value;
-  u.plan.consultant=document.getElementById('pConsultant').value;
+
 }
 function currentPlan(){
-  const u=MODAL_UNIT;const net=u.price-effDiscount(u);const pl=u.plan;
+  const u=MODAL_UNIT;const pl=u.plan;
+  if(pl.mode==='cash'){
+    const cp=cashPrice(u.price);
+    const rows=[{type:'cashfull',date:new Date(pl.startDate||Date.now()),amount:cp}];
+    let maintenance=null;
+    if(pl.maintenanceOn){maintenance={date:new Date(pl.maintenanceDate),amount:cp*((pl.maintenancePct||10)/100),pct:(pl.maintenancePct||10)};}
+    const grand=cp+(maintenance?maintenance.amount:0);
+    return {dp:cp,balloon:0,financed:0,rows,delivery:null,maintenance,
+      unitTotal:cp,grandTotal:grand,count:0,per:0,mode:'cash',cash:true,
+      listPrice:u.price,cashSaving:u.price-cp};
+  }
+  const net=u.price-effDiscount(u);
   return buildPlan({price:net,dpType:pl.dpType,dpValue:pl.dpValue,mode:pl.mode,freq:pl.freq,monthlyFixed:pl.monthlyFixed,
-    years:pl.years,balloon:pl.balloon,startDate:pl.startDate,
+    years:pl.years,balloons:pl.balloons,startDate:pl.startDate,
     deliveryOn:pl.deliveryOn,deliveryPct:pl.deliveryPct,deliveryDate:pl.deliveryDate,
     maintenanceOn:pl.maintenanceOn,maintenancePct:pl.maintenancePct,maintenanceDate:pl.maintenanceDate});
 }
 function recalc(){
   readPlanInputs();applyModeVisibility();const p=currentPlan();const fixed=MODAL_UNIT.plan.mode==='fixed_annual';
+  if(MODAL_UNIT.plan.mode==='cash'){
+    document.getElementById('planMini').innerHTML=`
+      <div class="plan-stat"><span class="k">${t('unitPrice')}</span><span class="v">EGP ${money(p.listPrice)}</span></div>
+      <div class="plan-stat"><span class="k">${t('cashSavingLbl')} (${cashPct()}%)</span><span class="v">- EGP ${money(p.cashSaving)}</span></div>
+      <div class="plan-stat big"><span class="k">${t('cashPriceLbl')}</span><span class="v">EGP ${money(p.unitTotal)}</span></div>
+      ${p.maintenance?`<div class="plan-stat"><span class="k">${t('maintenance')} (${money(p.maintenance.pct)}%)</span><span class="v">EGP ${money(p.maintenance.amount)}</span></div>
+      <div class="plan-stat big"><span class="k">${t('grandTotal')}</span><span class="v">EGP ${money(p.grandTotal)}</span></div>`:''}`;
+    return;
+  }
   document.getElementById('planMini').innerHTML=`
     <div class="plan-stat"><span class="k">${t('downPayment')}</span><span class="v">EGP ${money(p.dp)}</span></div>
     <div class="plan-stat"><span class="k">${t('financed')}</span><span class="v">EGP ${money(p.financed)}</span></div>
@@ -1214,6 +1614,186 @@ function recalc(){
 }
 function saveUnit(){readPlanInputs();MODAL_UNIT.status=document.getElementById('uStatus').value;MODAL_UNIT.notes=document.getElementById('uNotes').value;const useEl=document.getElementById('uUse');if(useEl)MODAL_UNIT.use=useEl.value.trim();saveState(MODAL_UNIT);toast(t('saved'));if(CURRENT!=='settings')nav(CURRENT);}
 function closeUnit(){const o=document.getElementById('unitOverlay');if(o)o.remove();}
+function renderBalloons(){
+  const box=document.getElementById('balloonRows');if(!box||!MODAL_UNIT)return;
+  const bs=MODAL_UNIT.plan.balloons||[];
+  box.innerHTML=bs.length?bs.map((b,i)=>`<div class="field-row" style="grid-template-columns:1fr 1fr 42px;gap:8px;margin-bottom:6px" data-bi="${i}">
+      <input type="number" class="bAmt" placeholder="EGP" value="${b.amount||''}" oninput="readBalloons();recalc()">
+      <input type="date" class="bDate" value="${b.date||''}" oninput="readBalloons();recalc()">
+      <button type="button" class="btn btn-ghost" style="padding:4px;font-size:1.2rem;line-height:1" onclick="removeBalloon(${i})">–</button>
+    </div>`).join(''):`<div style="color:var(--muted-2);font-size:.78rem;padding:2px 0">${t('balloonNone')}</div>`;
+}
+function readBalloons(){
+  const box=document.getElementById('balloonRows');if(!box||!MODAL_UNIT)return;
+  MODAL_UNIT.plan.balloons=[...box.querySelectorAll('[data-bi]')].map(r=>({
+    amount:Number(r.querySelector('.bAmt').value)||0,
+    date:r.querySelector('.bDate').value||''}));
+}
+function addBalloon(){
+  if(!MODAL_UNIT.plan.balloons)MODAL_UNIT.plan.balloons=[];
+  readBalloons();
+  if(MODAL_UNIT.plan.balloons.length>=12){toast(t('balloonMax'));return;}
+  MODAL_UNIT.plan.balloons.push({amount:0,date:''});
+  renderBalloons();recalc();
+}
+function removeBalloon(i){readBalloons();MODAL_UNIT.plan.balloons.splice(i,1);renderBalloons();recalc();}
+
+/* ---------------- COMBINE UNITS (multi-unit single plan) ---------------- */
+let COMBO_SEL=[];
+function makeCombo(units){
+  const price=units.reduce((s,u)=>s+(Number(u.price)||0),0);
+  const area=units.reduce((s,u)=>s+(Number(u.area)||0),0);
+  return {id:'__combo__',_combo:true,
+    _members:units.map(u=>({code:u.code,price:u.price,floor:u.floor})),
+    code:units.map(u=>u.code).join(' + '),
+    floor:units[0].floor,type:units[0].type,
+    area,areaInt:area,areaExt:0,pm:area?Math.round(price/area):0,pmExt:0,
+    price,status:'available',notes:'',use:'',mark:null,
+    plan:{dpType:'percent',dpValue:25,freq:'monthly',years:4,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'}};
+}
+function openCombine(){
+  COMBO_SEL=[];
+  const ov=document.createElement('div');ov.className='overlay';ov.id='combineOverlay';
+  ov.onclick=(e)=>{if(e.target===ov)closeCombine();};
+  const avail=STATE.units.filter(u=>u.status==='available').slice().sort((a,b)=>String(a.code)<String(b.code)?-1:1);
+  ov.innerHTML=`<div class="modal" style="max-width:560px">
+    <div class="modal-head"><div><div class="mh-code">${t('combineTitle')}</div><div class="mh-sub">${t('combineHint')}</div></div>
+      <button class="modal-close" onclick="closeCombine()">✕</button></div>
+    <div class="modal-body" style="display:block;padding:16px">
+      <div id="comboList" style="display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto">
+        ${avail.map(u=>`<label class="chk" style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer">
+          <span><input type="checkbox" value="${u.id}" onchange="toggleCombo(${u.id},this.checked)"> ${codeLabel(u)} · ${t(FLOOR_KEY[u.floor])}</span>
+          <span class="price">EGP ${money(u.price)}</span></label>`).join('')||`<div style="color:var(--muted);text-align:center;padding:20px">${t('finderNone')}</div>`}
+      </div>
+    </div>
+    <div class="modal-foot" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div class="finder-cap" id="comboCap" style="margin:0;padding:12px 14px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="buildCombo()">${t('combineGo')}</button>
+        <button class="btn btn-ghost" onclick="closeCombine()">${t('back')}</button>
+      </div>
+    </div></div>`;
+  document.body.appendChild(ov);
+  updateComboCap();
+}
+function toggleCombo(id,on){
+  if(on){
+    if(COMBO_SEL.length>=4){const cb=document.querySelector('#comboList input[value="'+id+'"]');if(cb)cb.checked=false;toast(t('combineMax'));return;}
+    if(!COMBO_SEL.includes(id))COMBO_SEL.push(id);
+  }else{COMBO_SEL=COMBO_SEL.filter(x=>x!==id);}
+  updateComboCap();
+}
+function updateComboCap(){
+  const cap=document.getElementById('comboCap');if(!cap)return;
+  const sel=COMBO_SEL.map(id=>STATE.units.find(u=>u.id===id)).filter(Boolean);
+  const total=sel.reduce((s,u)=>s+(Number(u.price)||0),0);
+  cap.innerHTML=`<div class="cap-lab">${t('combineSelected')}: ${sel.length}/4</div>
+    <div class="cap-val">EGP ${money(total)}</div>
+    <div class="cap-sub">${sel.map(u=>u.code).join(' + ')||'—'}</div>`;
+}
+function closeCombine(){const o=document.getElementById('combineOverlay');if(o)o.remove();}
+
+/* ---------------- UNIT BRIEF (quick-look bottom sheet) ---------------- */
+function openBrief(id){
+  const u=STATE.units.find(x=>x.id===id);if(!u)return;
+  const cp=cashPrice(u.price);
+  const ov=document.createElement('div');ov.className='sheet-ov';ov.id='briefSheet';
+  ov.onclick=(e)=>{if(e.target===ov)closeBrief();};
+  ov.innerHTML=`<div class="sheet">
+    <div class="sheet-grip"></div>
+    <h3>${codeLabel(u)}</h3>
+    <div class="mh-sub" style="color:var(--muted);font-size:.82rem;margin-top:2px">${t(FLOOR_KEY[u.floor])} · ${t(u.type)}</div>
+    <div class="b-grid">
+      <div class="b-cell"><div class="k">${t('status')}</div><div class="v"><span class="badge b-${u.status}">${t(u.status)}</span></div></div>
+      <div class="b-cell"><div class="k">${t('totalArea')}</div><div class="v">${u.area} m²</div></div>
+      <div class="b-cell"><div class="k">${u.pmExt?t('pricePerMInt'):t('pricePerM')}</div><div class="v">EGP ${money(u.pm)}</div></div>
+      <div class="b-cell"><div class="k">${t('unitPrice')}</div><div class="v">EGP ${money(u.price)}</div></div>
+      <div class="b-cell"><div class="k">${t('cashPriceLbl')} (${cashPct()}%)</div><div class="v">EGP ${money(cp)}</div></div>
+      ${u.use?`<div class="b-cell"><div class="k">${t('unitUse')}</div><div class="v">${esc(u.use)}</div></div>`:''}
+    </div>
+    ${hasPlan(u.floor)?`<div class="plan-frame" style="margin-bottom:14px"><img class="plan-floorplan" src="${planImgSrc(u.floor)}" alt="plan"></div>`:''}
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="closeBrief();openUnit(${u.id})">${t('briefBuild')}</button>
+      <button class="btn btn-ghost" onclick="closeBrief()">${t('back')}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function closeBrief(){const o=document.getElementById('briefSheet');if(o)o.remove();}
+function buildCombo(){
+  const sel=COMBO_SEL.map(id=>STATE.units.find(u=>u.id===id)).filter(Boolean);
+  if(!sel.length){toast(t('combineHint'));return;}
+  COMBO=makeCombo(sel);
+  closeCombine();
+  openUnit('__combo__');
+}
+
+/* ---------------- SHARE PLAN (save-on-share, per-rep private; admin sees all) ---------------- */
+async function sharePlan(){
+  readPlanInputs();
+  const u=MODAL_UNIT;
+  if(!u.plan.customer){toast(t('selectCustomer'));document.getElementById('pCustomer').focus();return;}
+  saveState(u);
+  const p=currentPlan();
+  const ref='GC-'+(u._combo?'COMBO':String(u.id).padStart(4,'0'))+'-'+new Date().getFullYear();
+  const fixed=u.plan.mode==='fixed_annual';
+  const snapshot={
+    ref, unit_code:u.code, customer:u.plan.customer, mobile:u.plan.mobile||'',
+    unit_price:u.price, discount:effDiscount(u),
+    dp:p.dp, financed:p.financed, count:p.count, per:p.per, freq:u.plan.freq, fixed,
+    balloon:p.balloon, delivery:p.delivery||null, maintenance:p.maintenance||null,
+    unit_total:p.unitTotal, grand_total:p.grandTotal||p.unitTotal,
+    plan:JSON.parse(JSON.stringify(u.plan)),
+    by_name:(AUTH.user&&(AUTH.user._name||AUTH.user.email))||''
+  };
+  // Record to Supabase. return=representation => array on success, null on failure (RLS stamps created_by via default? no — we set it).
+  const saved=await sbFetch('/rest/v1/payment_plans',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify({unit_code:u.code, plan_data:snapshot, created_by:AUTH.user?AUTH.user.id:null})
+  });
+  toast((saved&&saved.length)?t('shareSaved'):t('shareErr'));
+  // Build a shareable summary + live link
+  const L=[
+    (STATE.settings.companyName||'Gold City')+' — '+t('quotation'),
+    t('code')+': '+u.code+'   '+t('ref')+': '+ref,
+    t('customer')+': '+u.plan.customer,
+    t('unitPrice')+': EGP '+money(u.price),
+  ];
+  if(u.plan.mode==='cash'){L.push(t('cashSavingLbl')+' ('+cashPct()+'%): -EGP '+money(p.cashSaving));L.push(t('cashPriceLbl')+': EGP '+money(p.unitTotal));}
+  else{L.push(t('downPayment')+': EGP '+money(p.dp));L.push(p.count+' × '+(fixed?t('monthly'):t(u.plan.freq))+' = EGP '+money(p.per));}
+  if(p.delivery)L.push(t('dueDelivery')+' ('+money(p.delivery.pct)+'%): EGP '+money(p.delivery.amount));
+  if(p.maintenance)L.push(t('maintenance')+' ('+money(p.maintenance.pct)+'%): EGP '+money(p.maintenance.amount));
+  L.push(t(p.maintenance?'grandTotal':'unitTotal')+': EGP '+money(p.grandTotal||p.unitTotal));
+  L.push(location.origin+location.pathname);
+  const text=L.join('\n');
+  if(navigator.share){
+    try{await navigator.share({title:u.code+' — '+u.plan.customer,text});}catch(e){}
+  }else if(navigator.clipboard){
+    try{await navigator.clipboard.writeText(text);toast(t('copied'));}catch(e){generateQuote();}
+  }else{generateQuote();}
+}
+
+/* Saved plans: reps see only their own, admin sees all (enforced by RLS). */
+async function renderShared(){
+  const main=document.getElementById('main');
+  main.innerHTML=`<div class="page-head"><div><div class="crumb">${t('quoteSub')}</div><h2>${t('navSaved')}</h2></div></div><div id="sharedList" class="muted">${t('loadingPlans')}</div>`;
+  const rows=await sbFetch('/rest/v1/payment_plans?select=id,unit_code,plan_data,created_at&order=created_at.desc&limit=200');
+  const box=document.getElementById('sharedList');
+  if(rows===null){box.textContent=t('sharedErr');return;}
+  if(!rows.length){box.textContent=t('sharedEmpty');return;}
+  const isAdmin=ROLE==='admin';
+  box.classList.remove('muted');
+  box.innerHTML=`<div class="table-wrap"><table><thead><tr>
+      <th>${t('date')}</th><th>${t('code')}</th><th>${t('customer')}</th>
+      ${isAdmin?`<th>${t('sharedBy')}</th>`:''}<th class="amt">${t('grandTotal')}</th></tr></thead><tbody>
+      ${rows.map(r=>{const d=r.plan_data||{};const dt=new Date(r.created_at);
+        return `<tr><td>${dt.toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</td>
+          <td>${r.unit_code||d.unit_code||''}</td><td>${d.customer||''}</td>
+          ${isAdmin?`<td>${d.by_name||''}</td>`:''}
+          <td class="amt">EGP ${money(d.grand_total||d.unit_total||0)}</td></tr>`;}).join('')}
+    </tbody></table></div>`;
+}
 let DRAG=null;
 function planDown(e){
   const img=document.getElementById('planImg');if(!img)return;
@@ -1266,11 +1846,11 @@ function exportExcel(){
     <table border="1">
     <tr><td colspan="4" style="font-size:18px;font-weight:bold">GOLD CITY DEVELOPMENTS — SEVEN B MALL</td></tr>
     <tr><td colspan="4">${t('paymentPlan')}</td></tr>
-    <tr><td>${t('code')}</td><td>${u.code}</td><td>${t('type')}</td><td>${t(u.type)}</td></tr>
+    <tr><td>${t('code')}</td><td>${esc(u.code)}</td><td>${t('type')}</td><td>${t(u.type)}</td></tr>
     <tr><td>${t('floor')}</td><td>${t(FLOOR_KEY[u.floor])}</td><td>${t('totalArea')}</td><td>${u.area} m²</td></tr>
     <tr><td>${t('internalArea')}</td><td>${u.areaInt} m²</td><td>${t('externalArea')}</td><td>${u.areaExt||0} m²</td></tr>
     <tr><td>${u.pmExt?t('pricePerMInt'):t('pricePerM')}</td><td>${money2(u.pm)}</td><td>${u.pmExt?t('pricePerMExt'):''}</td><td>${u.pmExt?money2(u.pmExt):''}</td></tr>
-    <tr><td>${t('customer')}</td><td>${u.plan.customer||'-'}</td><td>${t('mobile')}</td><td>${u.plan.mobile||'-'}</td></tr>
+    <tr><td>${t('customer')}</td><td>${esc(u.plan.customer||'-')}</td><td>${t('mobile')}</td><td>${esc(u.plan.mobile||'-')}</td></tr>
     <tr><td>${t('unitPrice')}</td><td>${money2(u.price)}</td><td>${t('discount')}</td><td>${money2(effDiscount(u))}${u.plan.discountType!=='amount'&&u.plan.discount>0?' ('+u.plan.discount+'%)':''}</td></tr>
     <tr><td>${t('downPayment')}</td><td>${money2(p.dp)}</td><td>${t('financed')}</td><td>${money2(p.financed)}</td></tr>
     <tr><td colspan="4"></td></tr>
@@ -1290,7 +1870,8 @@ function generateQuote(){
   if(!u.plan.customer){toast(t('selectCustomer'));document.getElementById('pCustomer').focus();return;}
   saveState();
   const p=currentPlan();const rtl=LANG==='ar';
-  const ref='GC-'+String(u.id).padStart(4,'0')+'-'+new Date().getFullYear();
+  const isCash=u.plan.mode==='cash';
+  const ref='GC-'+(u._combo?'COMBO':String(u.id).padStart(4,'0'))+'-'+new Date().getFullYear();
   const today=new Date();
   const gc1=STATE.settings.companyName||'GOLD CITY';
   const displayRows=p.rows.slice();
@@ -1311,25 +1892,29 @@ function generateQuote(){
     <div class="q-doc-title"><div class="dt">${t('quotation')}</div><div class="ds">${t('quoteSub')}</div></div>
     <div class="q-ref-row"><div>${t('ref')}: <b>${ref}</b></div><div>${t('date')}: <b>${fmtDate(today)}</b></div></div>
     <div class="q-hl">
-      <div class="cell feature"><div class="k">${t('code')}</div><div class="v">${u.code}</div></div>
+      <div class="cell feature"><div class="k">${t('code')}</div><div class="v">${esc(u.code)}</div></div>
       <div class="cell feature"><div class="k">${t('totalArea')}</div><div class="v">${u.area} <small>m²</small></div></div>
     </div>
     <div class="q-info">
-      <div class="row"><div class="lab">${t('customer')}</div><div class="val">${u.plan.customer}</div></div>
-      ${u.plan.mobile?`<div class="row"><div class="lab">${t('mobile')}</div><div class="val">${u.plan.mobile}</div></div>`:''}
+      <div class="row"><div class="lab">${t('customer')}</div><div class="val">${esc(u.plan.customer)}</div></div>
+      ${u.plan.mobile?`<div class="row"><div class="lab">${t('mobile')}</div><div class="val">${esc(u.plan.mobile)}</div></div>`:''}
       <div class="row"><div class="lab">${t('type')}</div><div class="val">${t(u.type)}</div></div>
       <div class="row"><div class="lab">${t('floor')}</div><div class="val">${t(FLOOR_KEY[u.floor])}</div></div>
+      ${u._combo?`<div class="row" style="grid-column:1/-1"><div class="lab">${t('combineUnitsLbl')}</div><div class="val" style="white-space:normal">${u._members.map(m=>esc(m.code)+' — EGP '+money(m.price)).join('  ·  ')}</div></div>`:''}
       ${u.areaExt?`<div class="row"><div class="lab">${t('internalArea')} / ${t('externalArea')}</div><div class="val">${u.areaInt} m² / ${u.areaExt} m²</div></div>`:''}
       <div class="row"><div class="lab">${u.pmExt?t('pricePerMInt'):t('pricePerM')}</div><div class="val">EGP ${money(u.pm)}</div></div>
       ${u.pmExt?`<div class="row"><div class="lab">${t('pricePerMExt')}</div><div class="val">EGP ${money(u.pmExt)}</div></div>`:''}
       <div class="row"><div class="lab">${t('unitPrice')}</div><div class="val">EGP ${money(u.price)}</div></div>
-      ${effDiscount(u)>0?`<div class="row"><div class="lab">${t('discount')}${u.plan.discountType!=='amount'?' ('+u.plan.discount+'%)':''}</div><div class="val">– EGP ${money(effDiscount(u))}</div></div>`:''}
-      ${u.plan.consultant?`<div class="row"><div class="lab">${t('consultant')}</div><div class="val">${u.plan.consultant}</div></div>`:''}
+      ${isCash
+        ? `<div class="row"><div class="lab">${t('cashSavingLbl')} (${cashPct()}%)</div><div class="val">– EGP ${money(p.cashSaving)}</div></div>
+           <div class="row"><div class="lab">${t('cashPriceLbl')}</div><div class="val"><b>EGP ${money(p.unitTotal)}</b></div></div>`
+        : (effDiscount(u)>0?`<div class="row"><div class="lab">${t('discount')}${u.plan.discountType!=='amount'?' ('+u.plan.discount+'%)':''}</div><div class="val">– EGP ${money(effDiscount(u))}</div></div>`:'')}
+
     </div>
     ${hasPlan(u.floor)?`<div class="q-plan-img-wrap"><div class="cap">${t('unitLoc')} · ${t(FLOOR_KEY[u.floor])}</div>
       <img class="q-plan-img" id="qPlanImg" src="${planImgSrc(u.floor)}" alt="plan"></div>`:''}
     </div>
-    <div class="q-foot"><div>${gc1} · ${t('projectName')}</div><div>goldcitydevelopments.com · 01004404030</div></div>
+    <div class="q-foot"><div>${esc(gc1)} · ${t('projectName')}</div><div>goldcitydevelopments.com · 01004404030</div></div>
   </div>`;
   const page2=`<div class="q-page ${rtl?'rtl':''}"><div class="qp-pad">
     <div class="q-header-band">
@@ -1337,13 +1922,17 @@ function generateQuote(){
       <img class="q-sevenb" src="${mallLogoSrc()}" alt="Seven B">
     </div>
     <div class="q-doc-title" style="margin-top:24px"><div class="dt" style="font-size:1.3rem">${t('schedule')}</div>
-      <div class="ds">${u.code} · ${t('customer')}: ${u.plan.customer}</div></div>
-    <div class="q-terms">
+      <div class="ds">${esc(u.code)} · ${t('customer')}: ${esc(u.plan.customer)}</div></div>
+    ${isCash?`<div class="q-terms">
+      <div class="box"><div class="k">${t('unitPrice')}</div><div class="v">EGP ${money(p.listPrice)}</div></div>
+      <div class="box"><div class="k">${t('cashSavingLbl')} (${cashPct()}%)</div><div class="v">– EGP ${money(p.cashSaving)}</div></div>
+      <div class="box"><div class="k">${t('cashPriceLbl')}</div><div class="v">EGP ${money(p.unitTotal)}</div></div>
+    </div>`:`<div class="q-terms">
       <div class="box"><div class="k">${t('downPayment')}</div><div class="v">EGP ${money(p.dp)}</div></div>
       <div class="box"><div class="k">${p.mode==='fixed_annual'?t('fixedMonthly'):t('installments')}</div><div class="v">${p.mode==='fixed_annual'?'EGP '+money(p.per):p.count+' × '+t(u.plan.freq)}</div></div>
       ${p.delivery?`<div class="box"><div class="k">${t('dueDelivery')}</div><div class="v">EGP ${money(p.delivery.amount)}</div></div>`:''}
       ${p.maintenance?`<div class="box"><div class="k">${t('maintenance')} (${money(p.maintenance.pct)}%)</div><div class="v">EGP ${money(p.maintenance.amount)}</div></div>`:p.balloon>0?`<div class="box"><div class="k">${t('balloon')}</div><div class="v">EGP ${money(p.balloon)}</div></div>`:''}
-    </div>
+    </div>`}
     <table class="q-sched twoup"><thead><tr>
       <th>${t('no')}</th><th>${t('description')}</th><th>${t('dueDate')}</th><th class="amt">${t('paymentAmount')}</th>
       <th>${t('no')}</th><th>${t('description')}</th><th>${t('dueDate')}</th><th class="amt">${t('paymentAmount')}</th></tr></thead>
@@ -1354,7 +1943,7 @@ function generateQuote(){
       <div class="s"><div class="ln"></div><div class="lb">${t('companySign')}</div><div class="sb">${t('signStamp')}</div></div>
     </div>
     </div>
-    <div class="q-foot"><div>${gc1} · ${t('projectName')}</div><div>Al Shorouk · 8th District · Building 87</div></div>
+    <div class="q-foot"><div>${esc(gc1)} · ${t('projectName')}</div><div>Al Shorouk · 8th District · Building 87</div></div>
   </div>`;
   document.getElementById('qPages').innerHTML=page1+page2;
   const uo=document.getElementById('unitOverlay'); if(uo) uo.style.display='none';
@@ -1390,11 +1979,13 @@ function renderSettings(){
   document.getElementById('main').innerHTML=`
     <div class="page-head"><div><div class="crumb">${t('quoteSub')}</div><h2>${t('settingsTitle')}</h2></div></div>
     <div class="settings-card"><h3>${t('branding')}</h3>
-      <div class="field"><label>${t('companyName')}</label><input id="setCompany" value="${s.companyName}"></div>
-      <div class="field"><label>${t('mallName')}</label><input id="setMall" value="${s.mallName}"></div>
-      <div class="field"><label>${t('defConsultant')}</label><input id="setConsultant" value="${s.consultant||''}"></div>
-      <div class="field"><label>${t('changePass')}</label><input id="setPass" value="${s.passcode}"></div>
-      <div class="field"><label>${t('userPass')}</label><input id="setUserPass" value="${s.userPasscode||''}"></div>
+      <div class="field"><label>${t('companyName')}</label><input id="setCompany" value="${esc(s.companyName)}"></div>
+      <div class="field"><label>${t('mallName')}</label><input id="setMall" value="${esc(s.mallName)}"></div>
+      <div class="field"><label>${t('cashDiscLbl')}</label>
+        ${ROLE!=='admin'?`<div class="static">${s.cashDiscountPct!=null?s.cashDiscountPct:25}%</div>`:`<input type="number" id="setCashDisc" min="0" max="100" value="${s.cashDiscountPct!=null?s.cashDiscountPct:25}">`}
+        <div class="static" style="font-size:.78rem;color:var(--muted-2);margin-top:4px">${t('cashDiscHint')}</div></div>
+
+      <div class="field"><label>${t('changePass')}</label><div class="static" style="font-size:.85rem;color:var(--muted-2);line-height:1.5">${t('accountsNote')}</div></div>
       <div class="field"><label>${t('replaceGC')}</label><input type="file" accept="image/*" onchange="uploadLogo(event,'gcLogo')">
         <div class="logo-preview" style="background:#1c1916"><img src="${gcLogoSrc()}"></div></div>
       <div class="field"><label>${t('replaceMall')}</label><input type="file" accept="image/*" onchange="uploadLogo(event,'mallLogo')">
@@ -1410,9 +2001,8 @@ function uploadLogo(e,key){const f=e.target.files[0];if(!f)return;const r=new Fi
 function saveSettings(){
   STATE.settings.companyName=document.getElementById('setCompany').value;
   STATE.settings.mallName=document.getElementById('setMall').value;
-  STATE.settings.consultant=document.getElementById('setConsultant').value;
-  STATE.settings.passcode=document.getElementById('setPass').value;
-  STATE.settings.userPasscode=document.getElementById('setUserPass').value;
+  const cd=document.getElementById('setCashDisc'); if(cd){const v=Number(cd.value); STATE.settings.cashDiscountPct=isFinite(v)?Math.min(100,Math.max(0,v)):25;}
+
   persistSettings();toast(t('saved'));}
 
 /* ---------------- EXPORT / IMPORT ---------------- */
@@ -1433,6 +2023,9 @@ document.getElementById('topSevenB').src=mallLogoSrc();
 document.getElementById('loginGC').src=gcLogoSrc();
 document.getElementById('topGC').src=gcLogoSrc();
 applyI18n();
+
+// Auto-restore a saved session: logged-in devices skip the login screen
+restoreSession().then(ok=>{ if(ok) enterApp(); });
 
 /* ---------------- AUTO-UPDATE (refresh all devices when a new version is uploaded) ---------------- */
 const APP_VERSION=(document.querySelector('meta[name=app-version]')||{}).content||'0';
