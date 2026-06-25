@@ -507,7 +507,7 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
       <button class="ghost-btn" onclick="toggleTheme()" id="themeBtn" title="Light / Dark" data-i18n-title="themeTip">☀</button>
       <button class="ghost-btn" onclick="toggleLang()" id="langBtn">العربية</button>
       <button class="ghost-btn" onclick="sbPull().then(()=>{nav(CURRENT);toast('✓ '+t('syncedMsg'));})" title="Sync latest data" data-i18n-title="syncTip">⟳</button>
-      <button class="ghost-btn admin-only" onclick="openQuickPlan()" title="Pick a unit and frequency, get the quote PDF" data-i18n-title="quickPlanTip"><span>⚡</span><span data-i18n="quickPlan">Quick Plan</span></button>
+      <button class="ghost-btn" onclick="openQuickPlan()" title="Pick a unit and frequency, get the quote PDF" data-i18n-title="quickPlanTip"><span>⚡</span><span data-i18n="quickPlan">Quick Plan</span></button>
       <button class="ghost-btn admin-only" onclick="exportData()"><span>⬇</span><span data-i18n="export">Export</span></button>
       <button class="ghost-btn admin-only" onclick="document.getElementById('importFile').click()"><span>⬆</span><span data-i18n="import">Import</span></button>
       <input type="file" id="importFile" accept="application/json" class="hidden" onchange="importData(event)">
