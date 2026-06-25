@@ -200,6 +200,7 @@ tr[onclick]:active{opacity:.55;background:rgba(197,161,75,.12)}
 .field label{display:block;font-size:.66rem;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;margin-bottom:6px}
 .field input,.field select,.field textarea{width:100%;padding:10px 12px;background:var(--ink);border:1px solid var(--line-2);border-radius:8px;color:var(--txt)}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+.field input:disabled,.field select:disabled{opacity:.4;cursor:not-allowed;background:var(--ink-2,var(--ink))}
 .field .static{font-size:1.05rem;font-weight:700}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
@@ -503,9 +504,10 @@ body.role-user .role-badge{background:rgba(120,130,150,.16);color:#9aa6bd;border
     </div>
     <div class="topbar-actions">
       <span id="roleBadge" class="role-badge">Admin</span>
-      <button class="ghost-btn" onclick="toggleTheme()" id="themeBtn" title="Light / Dark">☀</button>
+      <button class="ghost-btn" onclick="toggleTheme()" id="themeBtn" title="Light / Dark" data-i18n-title="themeTip">☀</button>
       <button class="ghost-btn" onclick="toggleLang()" id="langBtn">العربية</button>
-      <button class="ghost-btn" onclick="sbPull().then(()=>{nav(CURRENT);toast('✓ Synced');})" title="Sync latest data">⟳</button>
+      <button class="ghost-btn" onclick="sbPull().then(()=>{nav(CURRENT);toast('✓ '+t('syncedMsg'));})" title="Sync latest data" data-i18n-title="syncTip">⟳</button>
+      <button class="ghost-btn admin-only" onclick="openQuickPlan()" title="Pick a unit and frequency, get the quote PDF" data-i18n-title="quickPlanTip"><span>⚡</span><span data-i18n="quickPlan">Quick Plan</span></button>
       <button class="ghost-btn admin-only" onclick="exportData()"><span>⬇</span><span data-i18n="export">Export</span></button>
       <button class="ghost-btn admin-only" onclick="document.getElementById('importFile').click()"><span>⬆</span><span data-i18n="import">Import</span></button>
       <input type="file" id="importFile" accept="application/json" class="hidden" onchange="importData(event)">
@@ -631,11 +633,15 @@ function buildPlan(o){
   const start=o.startDate?parseDate(o.startDate):new Date();
   const financed=price-dp-balloon; if(financed<0){}
   const dd=o.deliveryDate?parseDate(o.deliveryDate):null;
-  const T=price*((o.deliveryPct||50)/100); // amount that must be reached by the delivery date
+  // Due-delivery payment: a flat % of the unit price, charged on the delivery date,
+  // carved out of the financed amount like the down payment (still part of unit price).
   let delivery=null, deliveryAmount=0;
+  if(o.deliveryOn && dd){
+    deliveryAmount=Math.max(0,Math.min(price*((o.deliveryPct||0)/100),financed));
+    if(deliveryAmount>1)delivery={date:dd,amount:deliveryAmount,pct:(o.deliveryPct||0)};else deliveryAmount=0;
+  }
   const rows=[{type:'dp',date:new Date(start),amount:dp}];
   if(o.mode==='fixed_annual'){
-    if(o.deliveryOn && dd){deliveryAmount=Math.max(0,Math.min(T-dp,financed)); if(deliveryAmount>1)delivery={date:dd,amount:deliveryAmount,pct:(o.deliveryPct||50)};else deliveryAmount=0;}
     const fin=Math.max(0,financed-deliveryAmount);
     const annualQuota=fin/years;
     const effMonthly=Math.max(0, Math.min(o.monthlyFixed||0, annualQuota/12));
@@ -648,16 +654,7 @@ function buildPlan(o){
     const step=o.freq==='monthly'?1:o.freq==='quarterly'?3:o.freq==='semi'?6:Number(o.freq)||1;
     let count=Math.floor(Math.round(years*12)/step);if(count<1)count=1;
     const dates=[];for(let i=1;i<=count;i++){const d=addMonths(start,i*step);dates.push(d);}
-    let per=financed/count;
-    if(o.deliveryOn && dd){
-      const k=dates.filter(d=>d<=dd).length;   // installments due on/before delivery
-      const Nrem=count-k;                       // installments after delivery
-      if(Nrem>0){
-        const P=(price-balloon-T)/Nrem;         // equal installment s.t. dp + k·P + topup = T, and grand total = price
-        const topup=T-dp-k*P;                   // due-delivery payment = gap to reach T by the delivery date
-        if(topup>1 && P>0){per=P;deliveryAmount=topup;delivery={date:dd,amount:topup,pct:(o.deliveryPct||50)};}
-      }
-    }
+    const per=Math.max(0,financed-deliveryAmount)/count;
     for(let i=0;i<count;i++){rows.push({type:'inst',date:dates[i],amount:per});}
   }
   if(delivery) rows.push({type:'delivery',date:delivery.date,amount:deliveryAmount});
@@ -682,7 +679,7 @@ function buildPlan(o){
 /* ---------------- I18N ---------------- */
 const I18N={
   en:{brandName:'GOLD CITY',brandSub:'Developments',tagline:'Built. Not Promised.',mallCap:'Seven B · Al Shorouk',
-    passcode:'Password',emailLbl:'Email',enter:'Enter Platform',rememberMe:'Remember me',export:'Export',import:'Import',
+    passcode:'Password',emailLbl:'Email',enter:'Enter Platform',rememberMe:'Remember me',export:'Export',import:'Import',quickPlan:'Quick Plan',
     navDash:'Dashboard',navInv:'Inventory',navBoard:'Availability',navSet:'Settings',
     navFinder:'Budget Finder',navPlans:'Floor Plans',
     finderHint:'Enter what the client can pay. We total it over the term and find available units priced within ±5%.',
@@ -690,7 +687,7 @@ const I18N={
     finderCapacity:'Client total capacity',finderFit:'Fit vs price',finderNone:'No available unit matches within 5%. Try adjusting the inputs.',
     cashLbl:'Cash',installmentsLbl:'Installments',
     cashDiscLbl:'Cash discount (%)',cashDiscHint:'Applied only when Cash is selected. List price minus this %.',
-    finderCashBox:'Full amount client can pay (cash)',finderCashHint:'Cash price = list price minus cash discount. We show available units within \\u00b15% of this amount.',finderCashFit:'Fit vs cash price',
+    finderCashBox:'Full amount client can pay (cash)',finderCashHint:'Cash price = list price minus cash discount. We show available units within ±5% of this amount.',finderCashFit:'Fit vs cash price',
     payCash:'Cash',cashFullPay:'Full cash payment, no installments',cashPriceLbl:'Cash price',cashSavingLbl:'Cash discount',
     combineBtn:'Combine units',combineTitle:'Combine units into one plan',combineHint:'Pick up to 4 available units. Their prices are summed into one plan.',combineSelected:'Selected',combineTotal:'Combined price',combineGo:'Build combined plan',combineUnitsLbl:'Combined units',combineClear:'Clear',combineMax:'You can combine up to 4 units.',briefBuild:'Build Payment Plan',
     balloonPayments:'Balloon Payments',balloonNone:'No balloon payments. Tap + to add one.',balloonMax:'Up to 12 balloon payments.',finderEnter:'Enter the client\u2019s payment ability above to see matching units.',
@@ -722,15 +719,16 @@ const I18N={
     selectCustomer:'Enter customer name to generate quotation',planFor:'Payment plan for',
     markHint:'Tip: drag a box over the unit to fit the highlight (or click for a point). It saves and prints on the quotation.',markSet:'Unit location marked',clearMark:'Clear',roleAdmin:'Admin',roleUser:'Sales User',markUnit:'Unit area (gold)',markOutdoor:'Outdoor area (green)',
     planMode:'Plan Type',modeEqual:'Equal Installments',modeFixedAnnual:'Fixed + Year-End',fixedMonthly:'Fixed Monthly',
-    dueDelivery:'Due Delivery Payment',deliveryThreshold:'Required by Delivery',deliveryDate:'Delivery Date',
+    dueDelivery:'Due Delivery Payment',deliveryThreshold:'Delivery Payment',deliveryDate:'Delivery Date',
     maintenance:'Maintenance',maintenancePctL:'Maintenance',maintenanceDate:'Maintenance Date',
     pricePerMInt:'Price / m² (Indoor)',pricePerMExt:'Price / m² (Outdoor)',
     unitTotal:'Unit Total',grandTotal:'Grand Total (incl. Maintenance)',yearEnd:'Year-End Settlement',
     separateNote:'separate, not included in unit price',
     navSaved:'Saved Plans',shareBtn:'Share',shareSaved:'Plan shared & saved',shareErr:'Could not save plan (offline?)',
-    sharedBy:'Shared by',sharedEmpty:'No shared plans yet',sharedErr:'Could not load plans',copied:'Copied to clipboard',loadingPlans:'Loading…'},
+    sharedBy:'Shared by',sharedEmpty:'No shared plans yet',sharedErr:'Could not load plans',copied:'Copied to clipboard',loadingPlans:'Loading…',
+    themeTip:'Light / Dark',syncTip:'Sync latest data',syncedMsg:'Synced',quickPlanTip:'Pick a unit and frequency, get the quote PDF',invalidFile:'Invalid file'},
   ar:{brandName:'جولد سيتي',brandSub:'للتطوير العقاري',tagline:'نبني... لا نَعِد.',mallCap:'سيفن بي · الشروق',
-    passcode:'كلمة المرور',emailLbl:'البريد الإلكتروني',enter:'دخول المنصة',rememberMe:'تذكّرني',export:'تصدير',import:'استيراد',
+    passcode:'كلمة المرور',emailLbl:'البريد الإلكتروني',enter:'دخول المنصة',rememberMe:'تذكّرني',export:'تصدير',import:'استيراد',quickPlan:'خطة سريعة',
     navDash:'الرئيسية',navInv:'الوحدات',navBoard:'الإتاحة',navSet:'الإعدادات',
     navFinder:'مطابقة الميزانية',navPlans:'المخططات',
     finderHint:'أدخل ما يستطيع العميل دفعه. نقوم بجمعه على مدة السداد ونعرض الوحدات المتاحة بسعر ضمن ±٥٪.',
@@ -770,13 +768,14 @@ const I18N={
     selectCustomer:'أدخل اسم العميل لإصدار العرض',planFor:'خطة سداد لـ',
     markHint:'اسحب مربعًا فوق الوحدة لضبط التحديد (أو اضغط لتحديد نقطة). يُحفظ ويُطبع في عرض السعر.',markSet:'تم تحديد موقع الوحدة',clearMark:'مسح',roleAdmin:'مدير',roleUser:'مستخدم مبيعات',markUnit:'مساحة الوحدة (ذهبي)',markOutdoor:'المساحة الخارجية (أخضر)',
     planMode:'نوع الخطة',modeEqual:'أقساط متساوية',modeFixedAnnual:'ثابت + نهاية العام',fixedMonthly:'قسط شهري ثابت',
-    dueDelivery:'دفعة الاستلام',deliveryThreshold:'المطلوب عند الاستلام',deliveryDate:'تاريخ الاستلام',
+    dueDelivery:'دفعة الاستلام',deliveryThreshold:'دفعة الاستلام',deliveryDate:'تاريخ الاستلام',
     maintenance:'وديعة الصيانة',maintenancePctL:'الصيانة',maintenanceDate:'تاريخ الصيانة',
     pricePerMInt:'سعر المتر (داخلي)',pricePerMExt:'سعر المتر (خارجي)',
     unitTotal:'إجمالي الوحدة',grandTotal:'الإجمالي شامل الصيانة',yearEnd:'تسوية نهاية العام',
     separateNote:'منفصلة، غير مشمولة في سعر الوحدة',
     navSaved:'الخطط المحفوظة',shareBtn:'مشاركة',shareSaved:'تم حفظ ومشاركة الخطة',shareErr:'تعذّر حفظ الخطة (غير متصل؟)',
-    sharedBy:'بواسطة',sharedEmpty:'لا توجد خطط محفوظة بعد',sharedErr:'تعذّر تحميل الخطط',copied:'تم النسخ',loadingPlans:'جارٍ التحميل…'}
+    sharedBy:'بواسطة',sharedEmpty:'لا توجد خطط محفوظة بعد',sharedErr:'تعذّر تحميل الخطط',copied:'تم النسخ',loadingPlans:'جارٍ التحميل…',
+    themeTip:'فاتح / داكن',syncTip:'مزامنة أحدث البيانات',syncedMsg:'تمت المزامنة',quickPlanTip:'اختر وحدة وتكرار السداد للحصول على عرض السعر PDF',invalidFile:'ملف غير صالح'}
 };
 let LANG='en';
 function t(k){return (I18N[LANG]&&I18N[LANG][k])||k;}
@@ -930,6 +929,33 @@ function loadState(){
         localStorage.setItem('goldcity_logo_v2','1');
       }
     }catch(e){}
+    // one-time: convert the old 50% delivery default to 10% and keep delivery/maintenance always active
+    try{
+      if(localStorage.getItem('goldcity_deliv10')!=='1'){
+        let changed=false;
+        (STATE.units||[]).forEach(u=>{ if(u.plan){
+          if(Number(u.plan.deliveryPct)===50){u.plan.deliveryPct=10;changed=true;}
+          if(!u.plan.deliveryOn){u.plan.deliveryOn=true;changed=true;}
+          if(!u.plan.maintenanceOn){u.plan.maintenanceOn=true;changed=true;}
+        }});
+        localStorage.setItem('goldcity_deliv10','1');
+        if(changed) saveState();
+      }
+    }catch(e){}
+    // one-time: standardise every unit to 25% down payment, monthly, 4 years
+    try{
+      if(localStorage.getItem('goldcity_dp25m4')!=='1'){
+        let changed=false;
+        (STATE.units||[]).forEach(u=>{ if(u.plan){
+          if(u.plan.dpType!=='percent'){u.plan.dpType='percent';changed=true;}
+          if(Number(u.plan.dpValue)!==25){u.plan.dpValue=25;changed=true;}
+          if(u.plan.freq!=='monthly'){u.plan.freq='monthly';changed=true;}
+          if(Number(u.plan.years)!==4){u.plan.years=4;changed=true;}
+        }});
+        localStorage.setItem('goldcity_dp25m4','1');
+        if(changed) saveState();
+      }
+    }catch(e){}
     document.getElementById('loginSevenB').src=mallLogoSrc();
     document.getElementById('loginGC').src=gcLogoSrc();
     document.getElementById('topSevenB').src=mallLogoSrc();
@@ -1072,6 +1098,7 @@ async function logout(){
 /* ---------------- LANG ---------------- */
 function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.getAttribute('data-i18n'));});
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{el.title=t(el.getAttribute('data-i18n-title'));});
   document.documentElement.lang=LANG;document.documentElement.dir=LANG==='ar'?'rtl':'ltr';
   document.getElementById('langBtn').textContent=LANG==='ar'?'English':'العربية';
   const ll=document.getElementById('loginLang');if(ll)ll.textContent=LANG==='ar'?'English':'العربية';
@@ -1114,7 +1141,6 @@ function renderDashboard(){
   const byType=types.map(ty=>{const tu=u.filter(x=>x.type===ty);return {ty,n:tu.length};}).filter(x=>x.n);
   document.getElementById('main').innerHTML=`
     <div class="page-head"><div><div class="crumb">${t('quoteSub')}</div><h2>${t('navDash')}</h2></div></div>
-    <div class="flag-note"><span>⚑</span><span>${t('flagNote')}</span></div>
     <div class="stat-grid">
       <div class="stat s-gold"><div class="bar"></div><div class="lab">${t('totalUnits')}</div><div class="val">${u.length}</div><div class="sub">${t('projectName')}</div></div>
       <div class="stat s-green"><div class="bar"></div><div class="lab">${t('available')}</div><div class="val">${c.available}</div></div>
@@ -1327,15 +1353,17 @@ function zoomPlan(f){
 }
 
 /* ---------------- UNIT DETAIL + PLAN ---------------- */
-let MODAL_UNIT=null;
+let MODAL_UNIT=null;let MODAL_ORIG=null;
 let COMBO=null;
 function openUnit(id){
-  const u=id==='__combo__'?COMBO:STATE.units.find(x=>x.id===id);if(!u)return;MODAL_UNIT=u;
-  const DEF_PLAN={dpType:'percent',dpValue:25,freq:'monthly',years:4,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'};
+  const orig=id==='__combo__'?COMBO:STATE.units.find(x=>x.id===id);if(!orig)return;
+  MODAL_ORIG=orig;const u=JSON.parse(JSON.stringify(orig));MODAL_UNIT=u;
+  const DEF_PLAN={dpType:'percent',dpValue:25,freq:'monthly',years:4,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:10,deliveryDate:'2027-03-01'};
   u.plan=Object.assign({},DEF_PLAN,u.plan||{});
   if(!Array.isArray(u.plan.balloons))u.plan.balloons=(Number(u.plan.balloon)>0)?[{amount:Number(u.plan.balloon),date:''}]:[];
   delete u.plan.balloon;
   if(u.plan.discountType===undefined)u.plan.discountType=(u.plan.discount>0?'amount':'percent');
+  u.plan.customer='';u.plan.mobile='';
   const ov=document.createElement('div');ov.className='overlay';ov.id='unitOverlay';
   ov.onclick=(e)=>{if(e.target===ov)closeUnit();};
   ov.innerHTML=`<div class="modal"><div class="modal-head">
@@ -1414,13 +1442,13 @@ function openUnit(id){
                 <button id="segDiscAmt" class="${u.plan.discountType==='amount'?'on':''}" onclick="setDiscType('amount')">EGP</button></div>
             </div></div>
         </div>
-        <div class="subhead"><label class="chk"><input type="checkbox" id="pDeliveryOn" ${u.plan.deliveryOn?'checked':''} onchange="recalc()"> ${t('dueDelivery')}</label></div>
+        <div class="subhead">${t('dueDelivery')}<input type="checkbox" id="pDeliveryOn" checked hidden></div>
         <div class="field-row">
-          <div class="field"><label>${t('deliveryThreshold')} (%)</label><input type="number" id="pDeliveryPct" value="${u.plan.deliveryPct||50}" oninput="recalc()" onblur="snapDef(this,50,recalc)"></div>
+          <div class="field"><label>${t('deliveryThreshold')} (%)</label><input type="number" id="pDeliveryPct" value="${u.plan.deliveryPct||10}" oninput="recalc()" onblur="snapDef(this,10,recalc)"></div>
           <div class="field"><label>${t('deliveryDate')}</label><input type="date" id="pDeliveryDate" value="${u.plan.deliveryDate||'2027-03-01'}" oninput="recalc()"></div>
         </div>
         </div><!--/planStructure-->
-        <div class="subhead"><label class="chk"><input type="checkbox" id="pMaintOn" ${u.plan.maintenanceOn?'checked':''} onchange="recalc()"> ${t('maintenance')}</label></div>
+        <div class="subhead">${t('maintenance')}<input type="checkbox" id="pMaintOn" checked hidden></div>
         <div class="field-row">
           <div class="field"><label>${t('maintenancePctL')} (%)</label><input type="number" id="pMaintPct" value="${u.plan.maintenancePct||10}" oninput="recalc()" onblur="snapDef(this,10,recalc)"></div>
           <div class="field"><label>${t('maintenanceDate')}</label><input type="date" id="pMaintDate" value="${u.plan.maintenanceDate||'2027-01-01'}" oninput="recalc()"></div>
@@ -1462,6 +1490,61 @@ function applyModeVisibility(){
   const ff=document.getElementById('fldFreq'),fx=document.getElementById('fldFixed');
   if(ff)ff.style.display=fixed?'none':'';
   if(fx)fx.style.display=fixed?'':'none';
+  // lock delivery / maintenance inputs unless their checkbox is ticked
+  const dOn=document.getElementById('pDeliveryOn');
+  const dPct=document.getElementById('pDeliveryPct'),dDate=document.getElementById('pDeliveryDate');
+  if(dOn&&dPct){dPct.disabled=!dOn.checked;dDate.disabled=!dOn.checked;}
+  const mOn=document.getElementById('pMaintOn');
+  const mPct=document.getElementById('pMaintPct'),mDate=document.getElementById('pMaintDate');
+  if(mOn&&mPct){mPct.disabled=!mOn.checked;mDate.disabled=!mOn.checked;}
+}
+function openQuickPlan(){
+  const ar=LANG==='ar';
+  const units=STATE.units.slice().sort((a,b)=>String(a.code).localeCompare(String(b.code)));
+  const opts=units.map(u=>`<option value="${u.id}">${esc(u.code)} — EGP ${money(u.price)}</option>`).join('');
+  const ov=document.createElement('div');ov.className='overlay';ov.id='qpOverlay';
+  ov.onclick=(e)=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML=`<div class="modal" style="max-width:460px">
+    <div class="modal-head"><div><div class="mh-code">${ar?'خطة سداد سريعة':'Quick Payment Plan'}</div>
+    <div class="mh-sub">${ar?'مقدم 25% · دفعة استلام 10% · 4 سنوات':'25% down · 10% delivery · 4 years'}</div></div>
+    <button class="modal-close" onclick="document.getElementById('qpOverlay').remove()">✕</button></div>
+    <div class="modal-body" style="display:block">
+      <div class="field"><label>${t('unitCode')||(ar?'الوحدة':'Unit')}</label>
+        <select id="qpUnit">${opts}</select></div>
+      <div class="field"><label>${t('customer')}</label>
+        <input type="text" id="qpCustomer" placeholder="${ar?'اسم العميل':'Customer name'}"></div>
+      <div class="field"><label>${t('mobile')}</label>
+        <input type="text" id="qpMobile" placeholder="${ar?'اختياري':'Optional'}"></div>
+      <div class="field"><label>${t('frequency')}</label>
+        <select id="qpFreq">
+          <option value="monthly">${t('monthly')}</option>
+          <option value="quarterly">${t('quarterly')}</option>
+          <option value="semi">${t('semi')}</option>
+        </select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="genQuickQuote()">${ar?'إنشاء عرض السعر':'Generate quote'}</button>
+      <button class="btn btn-line" onclick="document.getElementById('qpOverlay').remove()">${ar?'إلغاء':'Cancel'}</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+}
+function genQuickQuote(){
+  const ar=LANG==='ar';
+  const id=Number(document.getElementById('qpUnit').value);
+  const u=STATE.units.find(x=>x.id===id);
+  if(!u)return;
+  const customer=document.getElementById('qpCustomer').value.trim();
+  if(!customer){document.getElementById('qpCustomer').focus();toast(t('selectCustomer'));return;}
+  const freq=document.getElementById('qpFreq').value;
+  const today=new Date().toISOString().slice(0,10);
+  u.plan={dpType:'percent',dpValue:25,mode:'equal',freq:freq,years:4,monthlyFixed:0,
+    startDate:today,discount:0,discountType:'percent',balloons:[],
+    deliveryOn:true,deliveryPct:10,deliveryDate:'2027-03-01',
+    maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',
+    customer:customer,mobile:document.getElementById('qpMobile').value.trim()};
+  MODAL_UNIT=u;
+  const ov=document.getElementById('qpOverlay');if(ov)ov.remove();
+  generateQuote(true);
 }
 function recalcAreas(){const u=MODAL_UNIT;
   const aiEl=document.getElementById('uAreaInt'),aeEl=document.getElementById('uAreaExt');
@@ -1558,7 +1641,7 @@ function recalc(){
     ${p.maintenance?`<div class="plan-stat"><span class="k">${t('maintenance')} (${money(p.maintenance.pct)}%)</span><span class="v">EGP ${money(p.maintenance.amount)}</span></div>
     <div class="plan-stat big"><span class="k">${t('grandTotal')}</span><span class="v">EGP ${money(p.grandTotal)}</span></div>`:''}`;
 }
-function saveUnit(){readPlanInputs();MODAL_UNIT.status=document.getElementById('uStatus').value;MODAL_UNIT.notes=document.getElementById('uNotes').value;const useEl=document.getElementById('uUse');if(useEl)MODAL_UNIT.use=useEl.value.trim();saveState(MODAL_UNIT);toast(t('saved'));if(CURRENT!=='settings')nav(CURRENT);}
+function saveUnit(){readPlanInputs();MODAL_UNIT.status=document.getElementById('uStatus').value;MODAL_UNIT.notes=document.getElementById('uNotes').value;const useEl=document.getElementById('uUse');if(useEl)MODAL_UNIT.use=useEl.value.trim();if(MODAL_ORIG)Object.assign(MODAL_ORIG,MODAL_UNIT);saveState(MODAL_ORIG||MODAL_UNIT);toast(t('saved'));if(CURRENT!=='settings')nav(CURRENT);}
 function closeUnit(){const o=document.getElementById('unitOverlay');if(o)o.remove();}
 function renderBalloons(){
   const box=document.getElementById('balloonRows');if(!box||!MODAL_UNIT)return;
@@ -1595,7 +1678,7 @@ function makeCombo(units){
     floor:units[0].floor,type:units[0].type,
     area,areaInt:area,areaExt:0,pm:area?Math.round(price/area):0,pmExt:0,
     price,status:'available',notes:'',use:'',mark:null,
-    plan:{dpType:'percent',dpValue:25,freq:'monthly',years:4,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:50,deliveryDate:'2027-03-01'}};
+    plan:{dpType:'percent',dpValue:25,freq:'monthly',years:4,balloon:0,startDate:new Date().toISOString().slice(0,10),discount:0,discountType:'percent',customer:'',mobile:'',mode:'equal',monthlyFixed:0,maintenanceOn:true,maintenancePct:10,maintenanceDate:'2027-01-01',deliveryOn:true,deliveryPct:10,deliveryDate:'2027-03-01'}};
 }
 function openCombine(){
   COMBO_SEL=[];
@@ -1680,7 +1763,6 @@ async function sharePlan(){
   readPlanInputs();
   const u=MODAL_UNIT;
   if(!u.plan.customer){toast(t('selectCustomer'));document.getElementById('pCustomer').focus();return;}
-  saveState(u);
   const p=currentPlan();
   const ref='GC-'+(u._combo?'COMBO':String(u.id).padStart(4,'0'))+'-'+new Date().getFullYear();
   const fixed=u.plan.mode==='fixed_annual';
@@ -1772,9 +1854,9 @@ function exportExcel(){
 }
 
 /* ---------------- QUOTATION (2 pages) ---------------- */
-function generateQuote(){
-  readPlanInputs();const u=MODAL_UNIT;
-  if(!u.plan.customer){toast(t('selectCustomer'));document.getElementById('pCustomer').focus();return;}
+function generateQuote(skipRead){
+  if(!skipRead)readPlanInputs();const u=MODAL_UNIT;
+  if(!u.plan.customer){toast(t('selectCustomer'));const c=document.getElementById('pCustomer');if(c)c.focus();return;}
   saveState();
   const p=currentPlan();const rtl=LANG==='ar';
   const isCash=u.plan.mode==='cash';
@@ -1925,7 +2007,7 @@ function exportData(){
   a.download='goldcity-data.json';a.click();toast(t('exported'));
 }
 function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);if(d.units&&d.settings){STATE=d;saveState();nav(CURRENT);toast(t('imported'));}else toast('Invalid file');}catch(err){toast('Invalid file');}};
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(d.units&&d.settings){STATE=d;saveState();nav(CURRENT);toast(t('imported'));}else toast(t('invalidFile'));}catch(err){toast(t('invalidFile'));}};
   r.readAsText(f);e.target.value='';}
 
 /* ---------------- ACCOUNTS (admin-only via Edge Function) ---------------- */
